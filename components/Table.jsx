@@ -24,7 +24,6 @@ function Table() {
     })
     const [sortPrimery, setSortPrimery] = useState('id');
     const [sortSecond, setSortSecond] = useState('id');
-    const { adding, setAdding, daysMap } = useContext(TableContext)
     const [itemPure, setItemPure] = useState([]) //sence with out day 
     // const [sortItem , setSortItem] = useState([]) //sence with out day 
     // const [items, setItems] = useState([])
