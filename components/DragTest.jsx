@@ -18,33 +18,33 @@ function DragTest({ items, style }) {
         setData(items)
     }, [items])
 
-    useEffect(() => {
-        console.log(document.querySelectorAll('.gsappp'))
-        const target = document.querySelectorAll('.gsappp')
+    // useEffect(() => {
+    //     console.log(document.querySelectorAll('.gsappp'))
+    //     const target = document.querySelectorAll('.gsappp')
 
 
 
-        let ctx = gsap.context(() => {
+    //     let ctx = gsap.context(() => {
 
-            // gsap.from(senceGsap.current, {  y: -10 ,duration :1,delay: 0.5});
+    //         // gsap.from(senceGsap.current, {  y: -10 ,duration :1,delay: 0.5});
 
-            gsap.from(target, 5, {
-                x: -100,
-                ease: "power1.inOut",
-                delay: 1,//make del by id
-                stagger: {
-                    amount: 1.5,
-                    grid: "auto",
-                    axis: "y",
-                    from: "end"
-                }
-            });
+    //         gsap.from(target, 5, {
+    //             x: -100,
+    //             ease: "power1.inOut",
+    //             delay: 1,//make del by id
+    //             stagger: {
+    //                 amount: 1.5,
+    //                 grid: "auto",
+    //                 axis: "y",
+    //                 from: "end"
+    //             }
+    //         });
 
-        }, document.querySelector('#container'))
+    //     }, document.querySelector('#container'))
 
-        return () => ctx.revert();
+    //     return () => ctx.revert();
 
-    }, [])
+    // }, [])
 
 
 

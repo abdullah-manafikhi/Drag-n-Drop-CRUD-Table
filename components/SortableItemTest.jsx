@@ -12,29 +12,29 @@ function SortableItemTest(props) {
     const compGsap = useRef()
     // console.log( document.querySelector('body'))
 
-    // useEffect(() => {
+    useEffect(() => {
 
-    //     let ctx = gsap.context(() => {
+        let ctx = gsap.context(() => {
 
-    //         // gsap.from(senceGsap.current, {  y: -10 ,duration :1,delay: 0.5});
+            gsap.from(senceGsap.current, {  y: -10 ,duration :1,delay: 0.5});
 
-    //         // gsap.from('span', 5, {
-    //         //     x: -100,
-    //         //     ease: "power1.inOut",
-    //         //     delay: 0,//make del by id
-    //         //     stagger: {
-    //         //       amount: .5, 
-    //         //       grid: "auto",
-    //         //       axis: "y",
-    //         //       from: "end"
-    //         //     }
-    //         //   });
+            gsap.from('span', 5, {
+                x: -100,
+                ease: "power1.inOut",
+                delay: 0,//make del by id
+                stagger: {
+                  amount: .5, 
+                  grid: "auto",
+                  axis: "y",
+                  from: "end"
+                }
+              });
 
-    //       }, compGsap)
+          }, compGsap)
 
-    //       return () => ctx.revert();
+          return () => ctx.revert();
 
-    // }, [])
+    }, [])
 
 
     // this is the table line "row" data
