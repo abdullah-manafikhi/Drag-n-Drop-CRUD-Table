@@ -1,6 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
 import TableContext from './context/TableContext.js';
-// import DndUI from './DndUI'
 import SortableItemForPrint from './SortableItemForPrint';
 
 

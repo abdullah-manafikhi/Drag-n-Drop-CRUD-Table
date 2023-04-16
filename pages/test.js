@@ -1,11 +1,18 @@
-import DragTest from "../components/DragTest"
+// import TestVirtual from "../components/testVirtual";
+import dynamic from 'next/dynamic'
 
 function test() {
 
-    return (
-            // <DragTest />
-            <h2>hello</h2>
-        )
+const TestVirtual = dynamic(() => import('../components/testVirtual'), {
+    ssr: false,
+  })
+
+  return (
+    <div className='w-screen'>
+      <h2>hello</h2>
+      <TestVirtual />
+    </div>
+  );
 }
 
-export default test
+export default test;

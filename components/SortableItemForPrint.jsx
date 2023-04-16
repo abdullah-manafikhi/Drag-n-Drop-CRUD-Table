@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import TableContext from "./context/TableContext.js.jsx";
 
 function SortableItemForPrint(props) {

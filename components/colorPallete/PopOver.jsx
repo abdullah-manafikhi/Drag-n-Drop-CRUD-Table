@@ -23,7 +23,7 @@ export const PopOver = ({ color, onChange, presetColors}) => {
 
       {isOpen && (
         <div className="popover" ref={popover}>
-          <HexColorPicker color={color} onChange={onChange} />
+          {/* <HexColorPicker color={color} onChange={onChange} /> */}
           <div className="picker__swatches">
             {presetColors.map((presetColor) => (
               <button

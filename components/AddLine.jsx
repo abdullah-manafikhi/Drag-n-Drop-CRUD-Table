@@ -1,9 +1,9 @@
 import { useContext } from 'react'
-import TableContext from './context/TableContext.js'
+import TableContext from './context/TableContext.js.jsx'
 
 function AddLine({ index }) {
 
-    const { addLine, setAddLine, adding, setAdding } = useContext(TableContext)
+    const { setAddLine, setAdding } = useContext(TableContext)
 
     const addDay = (e) => {
         setAddLine({index: index, type: "day", value: "new Day"})

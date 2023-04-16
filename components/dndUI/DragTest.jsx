@@ -1,23 +1,21 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { PropTypes } from "prop-types";
-import TableContext from './context/TableContext.js';
+import TableContext from '../context/TableContext.js.jsx';
+import { List, AutoSizer, WindowScroller } from 'react-virtualized';
 import SortableItemTest from "./SortableItemTest";
 import { gsap } from "gsap";
-import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList as List } from 'react-window';
 
 
-function DragTest({ items, style }) {
+function DragTest({ items, style4 }) {
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const [touch, setTouch] = useState(false)
 
-    const { setCursor, daysMap, setDaysMap, addLine } = useContext(TableContext);
+    const { setCursor, addLine } = useContext(TableContext);
 
     useEffect(() => {
         setData(items)
     }, [items])
-
     // useEffect(() => {
     //     console.log(document.querySelectorAll('.gsappp'))
     //     const target = document.querySelectorAll('.gsappp')
@@ -63,32 +61,6 @@ function DragTest({ items, style }) {
         }
     }, [addLine])
 
-    useEffect(() => {
-        // initializing global variable "days"
-        globalThis.days = {
-            colors: {},
-            data: []
-        }
-        if (data.length > 0) {
-            data.forEach((item, index) => {
-                // This condition is for checking if the item is a day item
-                if (Object.hasOwn(item, "day")) {
-                    (days.data).push({ ...item, index: index })
-                    // This condition is to check if the user had changed a day color 
-                    if (localStorage.getItem("colors") && (JSON.parse(localStorage.getItem("colors")))[index] !== "white") {
-                        days.colors = { ...days.colors, [item.id]: (JSON.parse(localStorage.getItem("colors")))[item.id] }
-                    }
-                    else {
-                        days.colors = { ...days.colors, [item.id]: "white" }
-                    }
-                }
-                // We are stringifying days object because we cannot save object in localStorge
-            })
-            localStorage.setItem("colors", JSON.stringify(days.colors))
-            setDaysMap(days)
-        }
-    }, [data])
-
 
     // ===========================================
     // *************** MOUSE EVENTS **************
@@ -96,6 +68,8 @@ function DragTest({ items, style }) {
 
     let x = null
     let dragFlag = false
+    let dragged
+
 
     const onDragStart = (e, index) => {
         e.currentTarget.classList.add("hello")
@@ -116,6 +90,7 @@ function DragTest({ items, style }) {
     const onDragEnter = (e, index) => {
         dragOverItem.current = { data: data[index], index: index };
         if (dragFlag) {
+            // console.log(dragItem.current, index)
             e.preventDefault();
             // after dragging a line when entering new line add "dragging class"
             e.currentTarget.classList.add("dragging");
@@ -132,6 +107,7 @@ function DragTest({ items, style }) {
     };
 
     const onDragEnd = (e) => {
+        console.log("drag end")
         if (dragFlag) {
             e.preventDefault();
             const test = [...data];
@@ -142,8 +118,9 @@ function DragTest({ items, style }) {
                 ...dragItem.current,
                 index: dragOverItem.current.index,
             };
-            setRefresh((prev) => !prev);
+            console.log(test)
             setData(test);
+            setRefresh((prev) => !prev);
         }
         else {
             clearTimeout(x)
@@ -167,12 +144,13 @@ function DragTest({ items, style }) {
     let y = null
     const pointerDown = (e, index) => {
         // e.preventDefault()
+        const trgt = e.currentTarget
         if (e.pointerType !== "mouse") {
             y = setTimeout(() => {
                 dragFlag = true
-                e.target.classList.add("dragging")
+                console.log("drag starts")
+                trgt.classList.add("dragging")
                 dragItem.current = { data: data[index], index: index };
-                // getting all the lines
                 setTouch(true)
             }, 300)
         }
@@ -185,9 +163,11 @@ function DragTest({ items, style }) {
                 e.currentTarget.style.width = "80%"
                 e.currentTarget.style.top = `${e.clientY}px`
                 e.currentTarget.style.zIndex = `+1000`
+                // scrolling when reaching the last part of the screen
                 if (e.clientY > window.innerHeight * 0.9) {
-                    window.scrollBy(0, 15)
+                    window.scrollBy(0, 30)
                 }
+                // scrolling when reaching the first part of the screen
                 if (e.clientY < window.innerHeight * 0.1) {
                     window.scrollBy(0, -15)
                 }
@@ -203,9 +183,10 @@ function DragTest({ items, style }) {
             e.currentTarget.style.top = "0px"
             if (dragFlag) {
                 globalThis.lines = [...document.querySelectorAll(".draggable-line")];
-                // creating array of objects that cotains the folowing info
+                // creating array of objects that cotains the following info
                 globalThis.heights = lines.map((line, indx) => {
                     let rec = line.getBoundingClientRect();
+                    //"index prop" getting the real index of the line from the set-sort custom attribute                          
                     return { id: line.id, index: indx, Y: indx === index ? 0 : rec.height + rec.top };
                 });
                 const current = heights.find((line) => { return (e.clientY) - (line.Y) < -10 });
@@ -224,6 +205,11 @@ function DragTest({ items, style }) {
                     dragItem.current = null
                 }
             }
+            const draggings = [...document.querySelectorAll(".dragging")]
+            draggings.forEach(dragging => {
+                dragging.classList.remove("dragging")
+                dragging.classList.remove("hello")
+            })
             clearTimeout(y)
             setTouch(false)
             dragFlag = false
@@ -234,11 +220,18 @@ function DragTest({ items, style }) {
 
     const onPointerCancel = (e) => {
         if (e.pointerType !== "mouse") {
+            console.log("pointer cancel")
             if (dragItem.current === null) {
-                clearTimeout(x)
+                setRefresh((prev) => !prev);
                 clearTimeout(y)
+                clearTimeout(x)
                 dragItem.current = null
                 dragFlag = false
+                const draggings = [...document.querySelectorAll(".dragging")]
+                draggings.forEach(dragging => {
+                    dragging.classList.remove("dragging")
+                    dragging.classList.remove("hello")
+                })
             }
         }
     }
@@ -246,14 +239,14 @@ function DragTest({ items, style }) {
     return (
         <div
             id="container"
-            className={`w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
+            className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             {data.map((line, index) => (
                 <div
                     draggable
                     key={index}
                     id={line.id}
-                    className={`w-full cursor-move draggable transition-transform touch-none draggable-line`}
+                    className={`w-full cursor-move draggable transition-transform draggable-line`}
                     // className={`w-full cursor-move draggable transition-transform draggable-line`}
                     onDragStart={(e) => onDragStart(e, index)}
                     onDragOver={(e) => e.preventDefault()}
@@ -271,13 +264,12 @@ function DragTest({ items, style }) {
                         index={index}
                         id={line.id}
                         line={line}
-                        style4={style}
+                        style4={style4}
                         value={`Item ${line.id}`}
                     />
                 </div>
             ))}
-        </div>
-    );
+        </div>)
 }
 
 DragTest.defaultProps = {
@@ -289,3 +281,169 @@ DragTest.propTypes = {
 };
 
 export default DragTest;
+
+
+
+const onDragStart = (e, index) => {
+    e.currentTarget.classList.add("hello")
+    x = setTimeout(() => {
+        dragFlag = true
+        e.target.classList.add("dragging")
+        dragItem.current = { data: data[index], index: index };
+        // getting all the lines
+        globalThis.lines = [...document.querySelectorAll(".draggable-line")];
+        // creating array of objects that cotains the folowing info
+        globalThis.heights = lines.map((line, index) => {
+            let rec = line.getBoundingClientRect();
+            return { id: line.id, index: index, Y: rec.height + rec.top };
+        });
+    }, 300)
+};
+
+const onDragEnter = (e, index) => {
+    dragOverItem.current = { data: data[index], index: index };
+    if (dragFlag) {
+        // console.log(dragItem.current, index)
+        e.preventDefault();
+        // after dragging a line when entering new line add "dragging class"
+        e.currentTarget.classList.add("dragging");
+    }
+};
+
+const onDragLeave = (e) => {
+    e.preventDefault();
+    if (dragFlag) {
+        // after dragging a line when leaving an enteed line remove "dragging class"
+        e.currentTarget.classList.remove("dragging");
+    }
+
+};
+
+const onDragEnd = (e) => {
+    console.log("drag end")
+    if (dragFlag) {
+        e.preventDefault();
+        const test = [...data];
+        test.splice(dragItem.current.index, 1);
+        // Adding item to the array
+        test.splice(dragOverItem.current.index, 0, dragItem.current.data);
+        dragItem.current = {
+            ...dragItem.current,
+            index: dragOverItem.current.index,
+        };
+        console.log(test)
+        setData(test);
+        setRefresh((prev) => !prev);
+    }
+    else {
+        clearTimeout(x)
+        dragItem.current = null
+    }
+    const draggings = [...document.querySelectorAll(".dragging")]
+    draggings.forEach(dragging => {
+        dragging.classList.remove("dragging")
+    })
+    clearTimeout(x)
+};
+
+
+
+// react-virtualized update
+
+// const onMouseDown = (e, index) => {
+//     e.preventDefault()
+//     const trgt = e.currentTarget
+//     console.log("mouse down", data[index], e.target)
+//     dragged = trgt
+//     dragItem.current = { data: data[e.currentTarget.attributes[0].value], index: index };
+
+//     // dragItem.current = { data: data[index], index: index };
+//     x = setTimeout(() => {
+//         dragFlag = true
+//         setTouch(true)
+//         dragOverLay.current.style.display = "block"
+//         dragOverLay.current.style.width = `${e.target.offsetWidth}px`
+//         dragOverLay.current.style.top = `${e.clientY}px`
+//         console.log("drag starts", e.clientY)
+//         // trgt.style.zIndex = "+100"
+//         // trgt.style.backgroundColor = "red"
+//         // e.target.style.setProperty('position', 'fixed', 'important')
+//         // dragged.style.top = `${e.clientY }px`
+//     }, 500);
+// }
+
+// const onMouseOver = (e, index) => {
+//     e.preventDefault()
+//     if (!dragFlag) {
+//         // console.log(e.currentTarget.attributes[0].value)
+//     }
+// }
+
+// const onMouseMove = (e, index) => {
+//     // e.preventDefault()
+//     if (dragFlag) {
+//         dragOverLay.current.style.top = `${e.clientY}px`
+//         // dragged.style.setProperty('position', 'fixed', 'important')
+//         // dragged.style.top = `${e.clientY }px`
+//     }
+// }
+
+// const onMouseUp = (e, index) => {
+//     console.log("mouse up")
+//     // setTouch(false)
+//     dragOverLay.current.style.display = "none"
+//     dragFlag = false
+//     // dragged.style.position = `relative`
+//     clearTimeout(x)
+//     x = null
+// }
+
+// {data.length > 0 ? (
+//     <WindowScroller>
+//         {({ height, isScrolling, onChildScroll, scrollTop }) => (
+//             <AutoSizer disableHeight>
+//                 {({ width }) => (
+//                     <List
+//                         autoHeight
+//                         height={height}
+//                         width={width} rowHeight={50} rowCount={100} scrollTop={scrollTop}
+//                         rowRenderer={({ key, index, style, parent }) => {
+//                             return (
+//                                 // <div key={key} style={style}>{data[index].location}</div>
+//                                 <div
+//                                     style={style}
+//                                     key={index}
+//                                     data-sort={index}
+//                                     id={data[index].id}
+//                                     className={`w-full cursor-move draggable transition-transform draggable-line ${touch ? " touch-none" : "touch-manipulation "}`}
+
+
+//                                     // className={`w-full cursor-move draggable transition-transform draggable-line`}
+//                                     // onDragStart={(e) => onDragStart(e, index)}
+//                                     // onDragOver={(e) => e.preventDefault()}
+//                                     // onDragEnter={(e) => onDragEnter(e, index)}
+//                                     // onDragLeave={(e) => onDragLeave(e, index)}
+//                                     // onDragEnd={(e) => onDragEnd(e, index)}
+
+
+//                                     // onPointerDown={(e) => pointerDown(e, index)}
+//                                     // onPointerMove={(e) => pointerMove(e, index)}
+//                                     // onPointerUp={(e) => pointerUp(e, index)}
+//                                     onPointerCancel={(e) => { onPointerCancel(e) }}
+//                                 >
+//                                     <SortableItemTest
+//                                         key={data[index].id}
+//                                         index={index}
+//                                         id={data[index].id}
+//                                         line={data[index]}
+//                                         style4={style4}
+//                                         value={`Item ${data[index].id}`}
+//                                     />
+//                                 </div>
+//                             )
+//                         }} />
+//                 )}
+//             </AutoSizer>
+//         )}
+//     </WindowScroller>
+// ) : ""}

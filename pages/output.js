@@ -1,26 +1,27 @@
+import Head from 'next/head'
 import Table from "../components/Table";
 // import dynamic from 'next/dynamic'
 
-
 function output() {
+  // const DndUI = dynamic(() => import('../components/DndUI'), {
+  //     ssr: false,
+  // })
 
-    // const DndUI = dynamic(() => import('../components/DndUI'), {
-    //     ssr: false,
-    // })
+  return (
+    <>
+      <Head>
+        <title>Table</title>
+      </Head>
+      <div className="container m-auto justify-center align-center flex-col">
+        <>
+          {/*  <!-- Add a button to trigger the PDF export --> */}
 
-  
-    return (
-
-        <div className="container m-auto justify-center align-center flex-col">
-            <>
-                {/*  <!-- Add a button to trigger the PDF export --> */}
-                
-                <Table />
-                {/* <DndUI /> */}
-            </>
-        </div>
-
-    )
+          <Table />
+          {/* <DndUI /> */}
+        </>
+      </div>
+    </>
+  );
 }
 
-export default output
+export default output;

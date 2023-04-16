@@ -113,10 +113,10 @@ body {
 }
 
 .row-grid {
-  width: 100% ;
+  width: 100%;
   display: grid;
   align-items: center;
-  grid-template-columns: 60px repeat(5, 1fr) 36px;
+  grid-template-columns: 60px repeat(5, 1fr);
   /* on edit dont forget to edit the print media  */
   grid-auto-rows: minmax(60px, auto);
   column-gap: 16px !important ;
@@ -124,22 +124,24 @@ body {
   justify-items: center;
   background-color: rgba(255, 255, 255, 0.8);
   margin: auto 4px;
-  padding-left : .4rem;
+  padding-left: 0.1rem;
+  padding-right: .7rem;
 }
 
 .row-grid-day {
-  width: 100% ;
+  width: 100%;
   display: grid;
-  grid-template-columns: 60px 1fr 36px ;
+  grid-template-columns: 60px 1fr 36px;
   grid-auto-rows: minmax(60px, auto);
   justify-items: center;
   background-color: rgba(255, 255, 255, 0.8);
   margin: auto 4px;
-  padding-left : .4rem;
+  padding-left: 0.4rem;
+  padding-right: .7rem;
 }
 
 .row-grid-day-print {
-  width: 100% ;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr;
   grid-auto-rows: minmax(60px, auto);
@@ -212,10 +214,9 @@ body {
   z-index: +100;
   border-radius: 9px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  background-color: rgba(255, 255, 255, 0.487);
+  background-color: rgba(255, 255, 255, 0.9);
   width: fit-content;
   cursor: pointer;
-
 }
 /* Start responcive */
 /* @media (max-width: 768px) {
@@ -295,7 +296,6 @@ body {
 }
 
 .dragging {
-  background-color: rgb(220, 255, 138) !important;
   opacity: 0.3;
   transition: 200ms;
   -webkit-transition: 200ms;
