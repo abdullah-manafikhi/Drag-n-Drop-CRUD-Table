@@ -1,4 +1,4 @@
-// import TestVirtual from "../components/testVirtual";
+import TestVirtual from "../components/testVirtual";
 import dynamic from 'next/dynamic'
 
 function test() {
