@@ -1,25 +1,22 @@
-import { useState, useEffect, useContext, useRef } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router'
-import Link from 'next/link'
 import TableContext from './context/TableContext.js.jsx';
 import Skeleton from './Skeleton.jsx';
 import DragTest from './dndUI/DragTest.jsx';
 import sortAccordingFor from "./functions/sort.js";
-import { BiCaretDown, BiCaretup, BiBrush } from 'react-icons/bi'
+import { BiBrush } from 'react-icons/bi'
 import { DATA } from '../assets/data2'
 import { PopOver } from './colorPallete/PopOver'
 import axios from 'axios'
+import addingDays from './functions/addingDays.js';
+import addingSavedDays from './functions/addingSavedDays.js';
 
-
-// import { VariableSizeList as List } from 'react-window';
-
-var currentsort = []
 
 function Table() {
 
     const [sortPrimery, setSortPrimery] = useState('id');
     const [sortSecond, setSortSecond] = useState('id');
-    const [itemPure, setItemPure] = useState([]) 
+    const [itemPure, setItemPure] = useState([])
 
     const { adding, setAdding, items, setItems, style4, setStyle4, tableInfo, setTableInfo } = useContext(TableContext)
 
@@ -52,31 +49,26 @@ function Table() {
             const res = await test.json()
             setTesting(res)
             console.log(res)
-            setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name })
+            setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
             setItemPure(res.table_content)
-            setItems(addingDays(res.table_content))
+            console.log()
+            if (Object.keys(res.days).length > 0) {
+                setItems(addingSavedDays(res.table_content, res.days))
+            }
+            // else if(Object.keys(res.days) === 0) {
+            //     setItems(addingDays(res.table_content))
+            // }
+            else{
+                setItems(addingDays(res.table_content))
+            }
         })()
         // setItems(addingDays(DATA.table_content))
         // setItemPure(DATA.table_content)
     }, [])
 
-    const addingDays = (data) => {
-        let counter = 0
-        let dayCount = 1
-        let finalArr = [{ id: `d_${1}`, day: `Day ${dayCount}`, counter: counter }]
-        ++dayCount
-        data.forEach((line, index) => {
-            if (line.hasOwnProperty("page_length")) {
-                counter += line.page_length
-            }
-            finalArr.push(line)
-            if (counter > 4.5) {
-                finalArr.push({ id: `d_${dayCount}`, day: `Day ${dayCount}`, counter: counter })
-                ++dayCount
-                counter = 0
-            }
-        })
-        return finalArr
+   
+    if (items.length > 0) {
+        console.log(addingSavedDays(itemPure, tableInfo.days))
     }
 
     const onChangeColor = (clr, day) => {
@@ -90,21 +82,18 @@ function Table() {
 
     const router = useRouter()
     const onSave = async (e) => {
+        let days = {}
+        items.forEach((item, index) => {
+            if (item.hasOwnProperty("day")) {
+                days = { ...days, [index]: item }
+            }
+        })
         const itemsNoDays = items.filter(item => !(item.hasOwnProperty("day")))
-        console.log(JSON.stringify(itemsNoDays))
         const tableName = tableInfo.name.replaceAll('\\"', "")
-        console.log(tableInfo.id)
         const response = await axios.put(
             `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
-            { name: tableName, table_content: JSON.stringify(itemsNoDays)}
+            { name: tableName, table_content: JSON.stringify(itemsNoDays), days: JSON.stringify(days) }
         )
-        // const test = {...testing, days: null}
-        // delete test.id
-        // console.log(test)
-        // const response = await axios.post(
-        //     `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards}`,
-        //      {test} 
-        // )
         console.log(response)
         router.push("/print")
     }

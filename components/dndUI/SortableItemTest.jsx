@@ -3,35 +3,10 @@ import { BiTrash, BiEditAlt, BiCross, BiTv } from 'react-icons/bi'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { MdDone } from "react-icons/md"
 import TableContext from '../context/TableContext.js.jsx';
-import { PopOver } from '../colorPallete/PopOver'
 import AddLine from '../AddLine.jsx';
-import { gsap } from "gsap";
 
 function SortableItemTest(props) {
-
-    const senceGsap = useRef()
-    const compGsap = useRef()
-    // console.log( document.querySelector('body'))
-
-    // useEffect(() => {
-    //     let ctx = gsap.context(() => {
-    //         gsap.from(senceGsap.current, {  y: -10 ,duration :1,delay: 0.5});
-    //         gsap.from('span', 5, {
-    //             x: -100,
-    //             ease: "power1.inOut",
-    //             delay: 0,//make del by id
-    //             stagger: {
-    //               amount: .5, 
-    //               grid: "auto",
-    //               axis: "y",
-    //               from: "end"
-    //             }
-    //           });
-    //       }, compGsap)
-    //       return () => ctx.revert();
-    // }, [])
-
-
+   
     // this is the table line "row" data
     const [formData, setFormData] = useState(props.line)
     const [inputDisabled, setInputDisabled] = useState(true)
@@ -40,9 +15,9 @@ function SortableItemTest(props) {
 
     // getting the table from the context
     const { cursor, adding, setAdding, setItems, items, selectedLine, setSelectedLine } = useContext(TableContext)
+
     // This for focusing on the scene input when updateing start
     const firstInputRef = useRef()
-
     const styleSummary = useRef()
 
     useEffect(() => {
@@ -61,8 +36,7 @@ function SortableItemTest(props) {
     }, [inputDisabled])
 
     // This function is reponsible for allowing the user to save the edits that he/she made is on the row 
-    const saveIconHandler = (e) => {
-        console.log(props.index)
+    const saveHandler = (e) => {
         setItems((prevState) => {
             let newItems = [...prevState]
             newItems[props.index] = { ...formData }
@@ -74,9 +48,8 @@ function SortableItemTest(props) {
 
     const [prevValue, setPrevValue] = useState("")
 
-    const cancelIconHandler = (e) => {
+    const cancelHandler = (e) => {
         setInputDisabled(true)
-        console.log(e.target, e.target.value, e.target.id)
         setFormData(prevValue)
     }
 
@@ -104,11 +77,10 @@ function SortableItemTest(props) {
         setFormData(prevState => ({ ...prevState, [trgt.id]: trgt.value }))
     }
 
+    // THIS IS FOR SAVING THE ORIGINAL VALUE "FOR THE CANCEL"
     const onFocus = (e) => {
-        console.log(e.target.id)
         setPrevValue(formData)
     }
-
 
 
     return (
@@ -125,10 +97,10 @@ function SortableItemTest(props) {
                                         <a aria-label="delete" className=' btn btn-xs btn-ghost text-red-600' href="#my-modal-2" onClick={() => setSelectedLine(formData)} ><BiTrash /></a>
                                     </> :
                                     <>
-                                        <button aria-label="save" className=' btn btn-xs btn-ghost text-green-500 text-lg' onClick={(e) => saveIconHandler(e)}>
+                                        <button aria-label="save" className=' btn btn-xs btn-ghost text-green-500 text-lg' onClick={(e) => saveHandler(e)}>
                                             <MdDone />
                                         </button>
-                                        <button aria-label="undo" className=' btn btn-xs btn-ghost text-sm text-red-500' onClick={(e) => cancelIconHandler(e)}>
+                                        <button aria-label="undo" className=' btn btn-xs btn-ghost text-sm text-red-500' onClick={(e) => cancelHandler(e)}>
                                             x
                                         </button>
                                     </>}
@@ -144,7 +116,7 @@ function SortableItemTest(props) {
                                         <input
                                             onFocus={(e) => onFocus(e)}
                                             onChange={e => onChange(e)} id="day"
-                                            type="text" placeholder="" defaultValue={`Day ${formData.day}`} ref={firstInputRef}
+                                            type="text" placeholder="" defaultValue={`${formData.day}`} ref={firstInputRef}
                                             className={`input input-ghost text-center resize-none w-full font-extrabold max-w-xs scroll-day`}
                                         />
                                     </>
@@ -171,10 +143,10 @@ function SortableItemTest(props) {
                                             <a aria-label="delete" className=' btn btn-xs btn-ghost text-red-600' href="#my-modal-2" onClick={() => setSelectedLine(formData)}><BiTrash /></a>
                                         </> :
                                         <>
-                                            <button aria-label="save" className=' btn btn-xs btn-ghost text-green-500 text-lg' onClick={(e) => saveIconHandler(e)}>
+                                            <button aria-label="save" className=' btn btn-xs btn-ghost text-green-500 text-lg' onClick={(e) => saveHandler(e)}>
                                                 <MdDone />
                                             </button>
-                                            <button aria-label="undo" className=' btn btn-xs btn-ghost text-sm text-red-500' onClick={(e) => cancelIconHandler(e)}>
+                                            <button aria-label="undo" className=' btn btn-xs btn-ghost text-sm text-red-500' onClick={(e) => cancelHandler(e)}>
                                                 x
                                             </button>
                                         </>}
@@ -211,10 +183,8 @@ function SortableItemTest(props) {
                         : (
                             <>
                                 <div
-                                    // style={formData.camera === "INT." ? style4.INT : style4.EXT}
                                     style={formData.camera === "INT." ? style4.INT : style4.EXT}
                                     title="Hold to Drag!"
-                                    ref={senceGsap}
                                     className={`row-grid box touch-manipulation -z-10 ${cursor}`}
                                 >
                                     <span className="w-full noprintdplay m-auto flex">
@@ -234,10 +204,10 @@ function SortableItemTest(props) {
                                             </>
                                         ) : (
                                             <>
-                                                <button aria-label="save" className=' btn btn-xs btn-ghost text-green-500 text-lg' onClick={(e) => saveIconHandler(e)}>
+                                                <button aria-label="save" className=' btn btn-xs btn-ghost text-green-500 text-lg' onClick={(e) => saveHandler(e)}>
                                                     <MdDone />
                                                 </button>
-                                                <button aria-label="undo" className=' btn btn-xs btn-ghost text-sm text-red-500' onClick={(e) => cancelIconHandler(e)}>
+                                                <button aria-label="undo" className=' btn btn-xs btn-ghost text-sm text-red-500' onClick={(e) => cancelHandler(e)}>
                                                     x
                                                 </button>
                                             </>
