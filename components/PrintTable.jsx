@@ -1,12 +1,15 @@
 import { useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import TableContext from './context/TableContext.js';
 import SortableItemForPrint from './SortableItemForPrint';
+import {MdDownload} from 'react-icons/md'
+import {BsChevronLeft} from 'react-icons/bs'
 
 
 function PrintTable() {
 
     // getting data from table context
-    const { items } = useContext(TableContext);
+    const { items, tableInfo } = useContext(TableContext);
 
 
     const handlePrint = () => {
@@ -15,14 +18,17 @@ function PrintTable() {
         }
     }
 
+    const router = useRouter()
+
     return (
         <div className="container m-auto justify-center align-center flex-col">
             <>
+                <button onClick={() => router.back()} className='btn btn-ghost relative top-6 noprintdplay  '> <BsChevronLeft className='mr-3' /> back </button>
                 {/*  <!-- Add a button to trigger the PDF export --> */}
-                <h1 className=' text-2xl font-bold mx-auto w-fit mt-8 '>Title Strip Board</h1>
+                <h1 className=' text-3xl font-bold mx-auto w-fit mt-8 '>{tableInfo.name} Strip Board</h1>
                 <div className="flex noprintdplay justify-center p-8">
-                    <button onClick={handlePrint} className='bg-blue-500 p-2  hover:bg-blue-700 text-white font-bold p-y-2 px-4 rounded ms-3'>
-                        save as PDF
+                    <button onClick={handlePrint} className='btn btn-sm btn-success text-white'>
+                        Download <MdDownload className='ml-2 text-lg' />
                     </button>
                 </div>
                 <main className='my-container printpage'>

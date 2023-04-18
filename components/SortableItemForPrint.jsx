@@ -8,57 +8,13 @@ function SortableItemForPrint(props) {
   const [style3, setStyle3] = useState({ backgroundColor: "" })
 
   // getting the table from the context
-  const { daysMap, items } = useContext(TableContext)
+  const { style4, items } = useContext(TableContext)
 
-  useEffect(() => {
-    if (daysMap !== null) {
-      const LsColors = JSON.parse(localStorage.getItem("colors"))
-      let l = 0
-      let r = daysMap.data.length - 1
-      let mid = 0
-
-      // =====================================
-      // *********** BINARY SEARCH ************
-      // ======================================
-
-      // This loop determines the line colors useing dpending on the day line color using binary search
-      while (l + 1 < r) {
-        mid = Math.floor((l + r) / 2)
-        if (props.index <= daysMap.data[mid].index) {
-          r = mid
-        }
-        else if (props.index >= daysMap.data[mid].index) {
-          l = mid
-        }
-      }
-      if (daysMap.data[l] !== undefined) {
-        setStyle3(prevState => (
-          {
-            ...prevState,
-            backgroundColor: daysMap.colors[daysMap.data[l].id] === "white" ? LsColors[daysMap.data[l].id] : daysMap.colors[daysMap.data[l].id]
-          }
-        ))
-      }
-
-      if (Object.hasOwn(formData, "day")) {
-        setStyle3(prevState => (
-          {
-            ...prevState,
-            backgroundColor: daysMap.colors[formData.id] === "white" ? LsColors[formData.id] : daysMap.colors[formData.id]
-          }
-        ))
-      }
-    }
-  }, [daysMap])
-
-  if (daysMap === null) {
-    return <h2>Loading...</h2>;
-  }
-  else {
+ 
     // ========== DAYS LINES ===========
     if (props.line.day) {
       return (
-        <div style={style3} className={`row-grid-day-print touch-manipulation z-1  `} >
+        <div style={style4.DAYS} className={`row-grid-day-print touch-manipulation z-1  `} >
           <span className="my-auto font-extrabold">{formData.day}</span>
         </div>
       );
@@ -66,7 +22,7 @@ function SortableItemForPrint(props) {
     // ========== NOTES LINES ===========
     else if (props.line.note) {
       return (
-        <div style={style3} className={`row-grid-day touch-manipulation z-1 `}>
+        <div style={style4.note} className={`row-grid-day touch-manipulation z-1 `}>
           <span className="my-auto">{formData.note}</span>
         </div>
       );
@@ -74,7 +30,7 @@ function SortableItemForPrint(props) {
     // =========== SCENE LINES ===========
     else {
       return (
-        <div style={style3} className={`row-grid touch-manipulation z-1 `}>
+        <div style={formData.camera === "INT." ? style4.INT : style4.EXT} className={`row-grid touch-manipulation z-1 `}>
           <span className="my-auto">
             <span>{formData.scene}</span>
           </span>
@@ -94,6 +50,5 @@ function SortableItemForPrint(props) {
       )
     }
   }
-}
 
 export default SortableItemForPrint;

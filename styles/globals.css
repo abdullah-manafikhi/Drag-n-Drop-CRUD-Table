@@ -88,7 +88,7 @@ body {
 
 .table-grid {
   display: grid;
-  width: fit-content;
+  width: 90%;
   column-gap: 16px !important ;
   grid-template-columns: auto;
   margin: 0px auto;
@@ -140,6 +140,7 @@ body {
   padding-right: .7rem;
 }
 
+
 .row-grid-day-print {
   width: 100%;
   display: grid;
@@ -147,7 +148,13 @@ body {
   grid-auto-rows: minmax(60px, auto);
   justify-items: center;
   background-color: rgba(255, 255, 255, 0.8);
-  margin: auto;
+  margin: auto 4px;
+}
+
+@media print {
+  .row-grid-day-print {
+    margin: auto ;
+  }
 }
 
 .row-grid-note {
@@ -228,13 +235,18 @@ body {
   #tableTitle span {
     font-size: 12px;
   }
-  .row-grid {
-    /* grid-template-columns: 60px 1fr repeat(3, 2fr) 1fr ; */
+
+  .table-grid{
+    width:auto;
+  }
+
+  /* .row-grid {
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-areas: "tools  tools . " " tools tools . ";
-    /* on edit dont forget to edit the print media  */
     grid-auto-rows: minmax(60px, auto);
-  }
+  } */
+  /* on edit dont forget to edit the print media  */
+  /* grid-template-columns: 60px 1fr repeat(3, 2fr) 1fr ; */
   .tools {
     grid-area: "tools";
   }

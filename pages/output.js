@@ -1,5 +1,7 @@
-import Head from 'next/head'
+import Head from "next/head";
 import Table from "../components/Table";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 // import dynamic from 'next/dynamic'
 
 function output() {
@@ -7,10 +9,16 @@ function output() {
   //     ssr: false,
   // })
 
+  const router = useRouter();
+
   return (
     <>
       <Head>
         <title>Table</title>
+        <meta
+          name="description"
+          content="Checkout the best service in the film industry field "
+        />
       </Head>
       <div className="container m-auto justify-center align-center flex-col">
         <>
