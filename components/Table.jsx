@@ -18,47 +18,29 @@ function Table() {
     const [sortSecond, setSortSecond] = useState('id');
     const [itemPure, setItemPure] = useState([])
 
-    const { adding, setAdding, items, setItems, style4, setStyle4, tableInfo, setTableInfo } = useContext(TableContext)
-
-
-    const onOptionChangeHandler1 = (event) => {
-        setSortPrimery(event.target.value)
-        console.log("User Sel- ", sortPrimery)
-    }
-    const onOptionChangeHandler2 = (event) => {
-        setSortSecond(event.target.value)
-    }
+    const { adding, setAdding, items, setItems, style4, setStyle4, tableInfo, setTableInfo, setIsSaved, isSaved } = useContext(TableContext)
 
     useEffect(() => {
         if (itemPure.length > 0) {
             const arrayAfterSort = sortAccordingFor(itemPure, sortPrimery, 1, sortSecond, 1)
             const sortAndDay = addingDays(arrayAfterSort)
             setItems(sortAndDay)
+            if(isSaved){
+                setIsSaved(false)
+            }
         }
     }, [sortPrimery, sortSecond])
-
-    const theadSortbyHundler = (e) => {
-        setSortPrimery(`${e}`)
-    }
-
-    const [testing, setTesting] = useState({})
 
     useEffect(() => {
         (async () => {
             const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/2")
             const res = await test.json()
-            setTesting(res)
-            console.log(res)
             setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
             setItemPure(res.table_content)
-            console.log()
             if (Object.keys(res.days).length > 0) {
                 setItems(addingSavedDays(res.table_content, res.days))
             }
-            // else if(Object.keys(res.days) === 0) {
-            //     setItems(addingDays(res.table_content))
-            // }
-            else{
+            else {
                 setItems(addingDays(res.table_content))
             }
         })()
@@ -66,9 +48,13 @@ function Table() {
         // setItemPure(DATA.table_content)
     }, [])
 
-   
-    if (items.length > 0) {
-        console.log(addingSavedDays(itemPure, tableInfo.days))
+    const onOptionChangeHandler1 = (event) => {
+        setSortPrimery(event.target.value)
+        console.log("User Sel- ", sortPrimery)
+    }
+
+    const onOptionChangeHandler2 = (event) => {
+        setSortSecond(event.target.value)
     }
 
     const onChangeColor = (clr, day) => {
@@ -81,6 +67,7 @@ function Table() {
     const presetColors = ["#3C486B", "#F0F0F0", "#F9D949", "#F45050", "#3A98B9", "#FFF1DC", "#E8D5C4", "#EEEEEE"];
 
     const router = useRouter()
+
     const onSave = async (e) => {
         let days = {}
         items.forEach((item, index) => {
@@ -96,6 +83,7 @@ function Table() {
         )
         console.log(response)
         router.push("/print")
+        setIsSaved(true)
     }
 
     return (

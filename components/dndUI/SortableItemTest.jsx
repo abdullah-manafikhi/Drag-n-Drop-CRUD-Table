@@ -6,7 +6,7 @@ import TableContext from '../context/TableContext.js.jsx';
 import AddLine from '../AddLine.jsx';
 
 function SortableItemTest(props) {
-   
+
     // this is the table line "row" data
     const [formData, setFormData] = useState(props.line)
     const [inputDisabled, setInputDisabled] = useState(true)
@@ -14,7 +14,7 @@ function SortableItemTest(props) {
     const [style4, setStyle4] = useState(props.style4)
 
     // getting the table from the context
-    const { cursor, adding, setAdding, setItems, items, selectedLine, setSelectedLine } = useContext(TableContext)
+    const { cursor, adding, setAdding, setItems, items, selectedLine, setSelectedLine, isSaved, setIsSaved } = useContext(TableContext)
 
     // This for focusing on the scene input when updateing start
     const firstInputRef = useRef()
@@ -42,7 +42,9 @@ function SortableItemTest(props) {
             newItems[props.index] = { ...formData }
             return newItems
         })
-
+        if(isSaved){
+            setIsSaved(false)
+        }
         setInputDisabled(true)
     }
 
@@ -185,7 +187,7 @@ function SortableItemTest(props) {
                                 <div
                                     style={formData.camera === "INT." ? style4.INT : style4.EXT}
                                     title="Hold to Drag!"
-                                    className={`row-grid box touch-manipulation -z-10 ${cursor}`}
+                                    className={`row-grid touch-manipulation -z-10 ${cursor}`}
                                 >
                                     <span className="w-full noprintdplay m-auto flex">
                                         {inputDisabled ? (
@@ -249,26 +251,24 @@ function SortableItemTest(props) {
                                             />
                                         </>
                                     )}
-                                    <span className="my-auto">
-                                        {inputDisabled ? (<><span className="text-sm ">{formData.summary}</span> </>) : (
-                                            <>
-                                                <textarea
-                                                    onFocus={(e) => onFocus(e)}
-                                                    ref={styleSummary}
-                                                    onChange={(e) => onChange(e)}
-                                                    id="summary"
-                                                    type="text"
-                                                    placeholder=""
-                                                    defaultValue={formData.summary}
-                                                    className={`textarea textarea-ghost textarea-xs resize-none w-full max-w-xs scroll ${inputDisabled
-                                                        ? "pointer-events-none"
-                                                        : "pointer-events-auto"
-                                                        }`}
-                                                />
-                                            </>
-                                        )}
-                                    </span>
-                                    {inputDisabled ? (<><span className="text-sm">{formData.location}</span> </>) : (
+                                    {inputDisabled ? (<><span className="text-sm w-32 sm:w-52 whitespace-pre-wrap break-words h-auto ">{formData.summary}</span> </>) : (
+                                        <>
+                                            <textarea
+                                                onFocus={(e) => onFocus(e)}
+                                                ref={styleSummary}
+                                                onChange={(e) => onChange(e)}
+                                                id="summary"
+                                                type="text"
+                                                placeholder=""
+                                                defaultValue={formData.summary}
+                                                className={`textarea textarea-ghost textarea-xs resize-none w-full max-w-xs scroll ${inputDisabled
+                                                    ? "pointer-events-none"
+                                                    : "pointer-events-auto"
+                                                    }`}
+                                            />
+                                        </>
+                                    )}
+                                    {inputDisabled ? (<><span className="text-sm whitespace-pre-wrap break-words">{formData.location}</span> </>) : (
                                         <>
                                             <textarea
                                                 onFocus={(e) => onFocus(e)}
@@ -284,7 +284,7 @@ function SortableItemTest(props) {
                                             />
                                         </>
                                     )}
-                                    <span className="my-auto w-full flex justify-end">
+                                    <span className={`my-auto w-full ${adding.isAdding ? "flex justify-end" : "flex justify-center"}`}>
                                         {inputDisabled ? (<><span className="text-sm ">{formData.page_length}</span> </>) : (
                                             <>
                                                 <textarea

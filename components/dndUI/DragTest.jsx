@@ -9,7 +9,7 @@ function DragTest({ items, style4 }) {
     const [refresh, setRefresh] = useState(false);
     const [touch, setTouch] = useState(false)
 
-    const { setCursor, addLine, setAddLine, setItems, selectedLine } = useContext(TableContext);
+    const { setCursor, addLine, setAddLine, setItems, selectedLine, isSaved, setIsSaved } = useContext(TableContext);
 
     useEffect(() => {
         setData(items)
@@ -23,10 +23,13 @@ function DragTest({ items, style4 }) {
     useEffect(() => {
         if (addLine.type) {
             let newItems = data.slice(0, addLine.index + 1)
-            newItems.push({ id: items.length, [addLine.type]: "New" })
-            const secondPart = data.slice(addLine.index + 1, data.length - 1)
+            newItems.push({ id: data.length + 1, [addLine.type]: "New" })
+            const secondPart = data.slice(addLine.index + 1, data.length)
             newItems = newItems.concat(secondPart)
             setItems(newItems)
+            if (isSaved) {
+                setIsSaved(false)
+            }
         }
     }, [addLine])
 
@@ -36,15 +39,18 @@ function DragTest({ items, style4 }) {
             e.preventDefault();
             e.returnValue = ""
         };
-
-        window.addEventListener("beforeunload", beforeunload);
-
+        if (!isSaved) {
+            window.addEventListener("beforeunload", beforeunload);
+        }
+        else{
+            window.removeEventListener("beforeunload", beforeunload)
+        }
         return () => {
             window.removeEventListener("beforeunload", beforeunload);
             // router.events.off("routeChangeStart", shit);
         };
-    }, []);
-
+    }, [isSaved]);
+    console.log(isSaved)
 
     // ===========================================
     // *************** MOUSE EVENTS **************
@@ -102,6 +108,9 @@ function DragTest({ items, style4 }) {
             setData(newData);
             setItems(newData)
             setRefresh((prev) => !prev);
+            if (isSaved) {
+                setIsSaved(false)
+            }
         }
         else {
             clearTimeout(x)
@@ -185,6 +194,9 @@ function DragTest({ items, style4 }) {
                     setRefresh((prev) => !prev);
                     dragItem.current = null
                 }
+                if (isSaved) {
+                    setIsSaved(false)
+                }
             }
             const draggings = [...document.querySelectorAll(".dragging")]
             draggings.forEach(dragging => {
@@ -223,6 +235,9 @@ function DragTest({ items, style4 }) {
             newItems = newItems.filter(item => item.id !== selectedLine.id)
             return newItems
         })
+        if (isSaved) {
+            setIsSaved(false)
+        }
     }
 
     return (
