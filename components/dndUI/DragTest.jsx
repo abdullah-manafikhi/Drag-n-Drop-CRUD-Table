@@ -15,20 +15,24 @@ function DragTest({ items, style4 }) {
     useEffect(() => {
         setData(items)
     }, [items])
-    // // start gsap animation 
-    // const container = useRef(null);
-    // useLayoutEffect(() => {
-    //     let ctx = gsap.context(() => {
-    //     gsap.to("#d", { rotate: 360, duration: 5 });
-    // }, container);
-    // return () => ctx.revert();
+    // start gsap animation 
+    const container = useRef(null);
+    useLayoutEffect(() => {
+        let theTargetAnimation  =  gsap.utils.toArray("#container  div.gsapTargetLol")
+        function getFirstTenItems(arr) {
+            console.log(arr.slice(0, 10))
+            return arr.slice(0, 10);
+        }
+        let ctx = gsap.context(() => {
 
-    // }, [])
+        gsap.fromTo(getFirstTenItems(theTargetAnimation), { y: 10, duration: 1 , stagger : 0.1} ,{ y: 0, duration: 0.5 , stagger : 0.1})
 
-    
+        
 
-
-    // // end gsap animation 
+    }, container);
+    return () => ctx.revert();
+    }, [items])
+    // end gsap animation 
 
     // ========= USERREFs =========
     const dragItem = useRef(null);
@@ -258,7 +262,7 @@ function DragTest({ items, style4 }) {
     return (
         <div
             id="container"
-            // ref={container}
+            ref={container}
             className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             <>
@@ -277,7 +281,7 @@ function DragTest({ items, style4 }) {
                         draggable
                         key={index}
                         id={line.id}
-                        className={`w-full cursor-move draggable transition-transform draggable-line`}
+                        className={`w-full gsapTargetLol cursor-move draggable transition-transform draggable-line`}
                         onDragStart={(e) => onDragStart(e, index)}
                         onDragOver={(e) => e.preventDefault()}
                         onDragEnter={(e) => onDragEnter(e, index)}
