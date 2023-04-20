@@ -1,8 +1,7 @@
-import { useState, useRef, useEffect, useContext, useLayoutEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { PropTypes } from "prop-types";
 import TableContext from '../context/TableContext.js.jsx';
 import SortableItemTest from "./SortableItemTest";
-import { gsap } from "gsap";
 
 
 function DragTest({ items, style4 }) {
@@ -15,25 +14,7 @@ function DragTest({ items, style4 }) {
     useEffect(() => {
         setData(items)
     }, [items])
-    // start gsap animation 
-    const container = useRef(null);
-    useLayoutEffect(() => {
-        let theTargetAnimation  =  gsap.utils.toArray("#container  div.gsapTargetLol")
-        function getFirstTenItems(arr) {
-            console.log(arr.slice(0, 10))
-            return arr.slice(0, 10);
-        }
-        let ctx = gsap.context(() => {
-
-        gsap.fromTo(getFirstTenItems(theTargetAnimation), { y: 10, duration: 1 , stagger : 0.1} ,{ y: 0, duration: 0.5 , stagger : 0.1})
-
-        
-
-    }, container);
-    return () => ctx.revert();
-    }, [items])
-    // end gsap animation 
-
+  
     // ========= USERREFs =========
     const dragItem = useRef(null);
     // the line that the pointer is over it after dragging a line
@@ -262,7 +243,6 @@ function DragTest({ items, style4 }) {
     return (
         <div
             id="container"
-            ref={container}
             className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             <>

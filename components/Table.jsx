@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect, useContext, useLayoutEffect } from "react";
 import { useRouter } from 'next/router'
 import TableContext from './context/TableContext.js.jsx';
 import Skeleton from './Skeleton.jsx';
@@ -10,6 +10,7 @@ import { PopOver } from './colorPallete/PopOver'
 import axios from 'axios'
 import addingDays from './functions/addingDays.js';
 import addingSavedDays from './functions/addingSavedDays.js';
+import { gsap } from "gsap";
 
 
 function Table() {
@@ -47,6 +48,25 @@ function Table() {
         // setItems(addingDays(DATA.table_content))
         // setItemPure(DATA.table_content)
     }, [])
+    // gsap lol 
+      // start gsap animation 
+      const containerForGsap = useRef(null);
+      useLayoutEffect(() => {
+          let theTargetAnimation  =  gsap.utils.toArray("#container  div.gsapTargetLol")
+          function getFirstTenItems(arr) {
+              console.log(arr.slice(0, 10))
+              return arr.slice(0, 10);
+          }
+          let ctx = gsap.context(() => {
+  
+          gsap.fromTo(getFirstTenItems(theTargetAnimation), 
+          { y: 20, duration: 0.9 , stagger : 0.25} ,
+          { y: 0, duration: 0.9 , stagger : 0.1})
+      }, containerForGsap);
+      return () => ctx.revert();
+      }, [items])
+      // end gsap animation 
+  
 
     const onOptionChangeHandler1 = (event) => {
         setSortPrimery(event.target.value)
@@ -87,7 +107,7 @@ function Table() {
     }
 
     return (
-        <div>
+        <div ref={containerForGsap}>
             <h1 className=' text-3xl font-bold mx-auto w-fit mt-6 mb-10 '>{tableInfo.name} Strip Board</h1>
             <div className="noprintdplay w-60 h-auto mx-auto p-2 flex justify-between">
                 {/* SAVE BUTTON */}
@@ -144,7 +164,7 @@ function Table() {
 
             {/* =============== TABLE =============== */}
             <main className='my-container'>
-                <div draggable className='table-grid  m-auto'>
+                <div draggable className='table-grid '>
                     {/* This is the main row  */}
                     <div id="tableTitle" className="row-grid">
                         <span className='text-white noprintdplay text-sm sm:text-lg font-bold mx-8'></span>
@@ -166,7 +186,6 @@ function Table() {
 
                     </div>
                     {/* This component is for displaying the rest of the table that has the DnD functionality */}
-                    {/* <Skeleton /> */}
                     {items.length > 0 ? <DragTest items={items} style4={style4} /> : (<Skeleton />)}
                 </div>
             </main>
