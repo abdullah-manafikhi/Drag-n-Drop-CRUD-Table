@@ -144,7 +144,7 @@ function Table() {
 
             {/* =============== TABLE =============== */}
             <main className='my-container'>
-                <div draggable className='table-grid '>
+                <div draggable className='table-grid  m-auto'>
                     {/* This is the main row  */}
                     <div id="tableTitle" className="row-grid">
                         <span className='text-white noprintdplay text-sm sm:text-lg font-bold mx-8'></span>
@@ -166,6 +166,7 @@ function Table() {
 
                     </div>
                     {/* This component is for displaying the rest of the table that has the DnD functionality */}
+                    {/* <Skeleton /> */}
                     {items.length > 0 ? <DragTest items={items} style4={style4} /> : (<Skeleton />)}
                 </div>
             </main>
