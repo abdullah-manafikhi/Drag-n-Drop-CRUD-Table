@@ -54,7 +54,7 @@ function Table() {
       useLayoutEffect(() => {
           let theTargetAnimation  =  gsap.utils.toArray("#container  div.gsapTargetLol")
           function getFirstTenItems(arr) {
-              console.log(arr.slice(0, 10))
+            //   console.log(arr.slice(0, 10))
               return arr.slice(0, 10);
           }
           let ctx = gsap.context(() => {

@@ -91,6 +91,10 @@ function SortableItemTest(props) {
                 (props.line.day) ? (
                     <>
                         <div title="Hold to Drag!" id={props.id} style={style4.DAYS} className={`row-grid-day touch-manipulation z-1 ${cursor} `}>
+                            {/* can u chang the id to  id={`s_${props.id}`} */}
+
+
+                            
                             <span className=' w-auto noprintdplay m-auto flex justify-evenly'>
                                 {inputDisabled ?
                                     <>

@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { PropTypes } from "prop-types";
 import TableContext from '../context/TableContext.js.jsx';
 import SortableItemTest from "./SortableItemTest";
+import { gsap } from "gsap";
+
 
 
 function DragTest({ items, style4 }) {
@@ -14,11 +16,40 @@ function DragTest({ items, style4 }) {
     useEffect(() => {
         setData(items)
     }, [items])
+
+    // gsap 
+    // gsap start
+    const gsapTargetScope = useRef(null);
+
+    useEffect(() => {
+  
+      let ctx = gsap.context(() => {
+
+       if(dragItem.current) { 
+        let targetId = dragItem.current.data.id
+        gsap.from(`div#${dragItem.current.data.id}`, { x: 10,delay:0.7, duration: 0.5 });
+        //gsap.to(".square2", { rotate: 360, duration: 5 });
+        //gsap.to(".square3", { rotate: 360, duration: 5 });
+    }
+  
+      }, gsapTargetScope);
+  
+      return () => ctx.revert();
+  
+    }, [data])
+  
+
+
+
+
+    // gsap end
   
     // ========= USERREFs =========
     const dragItem = useRef(null);
     // the line that the pointer is over it after dragging a line
     const dragOverItem = useRef(null);
+    if(dragItem.current){console.log(dragItem.current.data.id)}
+    // if(dragOverItem.current){console.log(dragOverItem.current.data.id)}  
 
     useEffect(() => {
         if (addLine.type) {
@@ -50,7 +81,7 @@ function DragTest({ items, style4 }) {
             // router.events.off("routeChangeStart", shit);
         };
     }, [isSaved]);
-    console.log(isSaved)
+    // console.log(isSaved)
 
     // ===========================================
     // *************** MOUSE EVENTS **************
@@ -243,6 +274,7 @@ function DragTest({ items, style4 }) {
     return (
         <div
             id="container"
+            ref={gsapTargetScope}
             className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             <>
