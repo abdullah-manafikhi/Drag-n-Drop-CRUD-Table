@@ -5,16 +5,16 @@ import { MdDone } from "react-icons/md"
 import TableContext from '../context/TableContext.js.jsx';
 import AddLine from '../AddLine.jsx';
 
-function SortableItemTest(props) {
+function SortableItem(props) {
 
     // this is the table line "row" data
-    const [formData, setFormData] = useState(props.line)
+    const [formData, setFormData] = useState({})
     const [inputDisabled, setInputDisabled] = useState(true)
     // For coloring lines depending on camera column value and days lines
     const [style4, setStyle4] = useState(props.style4)
 
     // getting the table from the context
-    const { cursor, adding, setAdding, setItems, items, selectedLine, setSelectedLine, isSaved, setIsSaved } = useContext(TableContext)
+    const { adding, setAdding, setItems, items, selectedLine, setSelectedLine, isSaved, setIsSaved } = useContext(TableContext)
 
     // This for focusing on the scene input when updateing start
     const firstInputRef = useRef()
@@ -23,6 +23,10 @@ function SortableItemTest(props) {
     useEffect(() => {
         setStyle4(props.style4)
     }, [props.style4])
+
+    useEffect(() => {
+        setFormData(props.line)
+    }, [props.line])
 
     useEffect(() => {
         setTimeout(() => {
@@ -90,7 +94,7 @@ function SortableItemTest(props) {
             {  // ========== DAYS LINES ===========
                 (props.line.day) ? (
                     <>
-                        <div title="Hold to Drag!" id={props.id} style={style4.DAYS} className={`row-grid-day touch-manipulation z-1 ${cursor} `}>
+                        <div title="Hold to Drag!" id={`d_${props.id}`} style={style4.DAYS} className={`row-grid-day touch-manipulation z-1 `}>
                             <span className=' w-auto noprintdplay m-auto flex justify-evenly'>
                                 {inputDisabled ?
                                     <>
@@ -136,7 +140,7 @@ function SortableItemTest(props) {
                     // ========== NOTES LINES ===========
                     : (props.line.note) ? (
                         <>
-                            <div title="Hold to Drag!" id={props.id} className={`row-grid-note touch-manipulation z-1 ${cursor}`}>
+                            <div title="Hold to Drag!" id={`n_${props.id}`} className={`row-grid-note touch-manipulation z-1`}>
                                 <span className='w-auto noprintdplay m-auto flex justify-evenly'>
                                     {/* inputDisable ?  *** ENOUGH *** */}
                                     {inputDisabled === true ?
@@ -187,7 +191,8 @@ function SortableItemTest(props) {
                                 <div
                                     style={formData.camera === "INT." ? style4.INT : style4.EXT}
                                     title="Hold to Drag!"
-                                    className={`row-grid touch-manipulation -z-10 ${cursor}`}
+                                    className={`row-grid touch-manipulation -z-10`}
+                                    id={`s_${props.id}`}
                                 >
                                     <span className="w-full noprintdplay m-auto flex">
                                         {inputDisabled ? (
@@ -318,4 +323,4 @@ function SortableItemTest(props) {
 
 }
 
-export default SortableItemTest
+export default SortableItem

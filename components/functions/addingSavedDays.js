@@ -2,14 +2,16 @@ export default function addingSavedDays(data, days) {
   let finalArr = [];
   let daysKeys = Object.keys(days);
   let daysIndex = 0;
-  data.forEach((item, index) => {
-    if (index === Number(daysKeys[daysIndex])) {
+  let sceneIndex = 0
+  for (let i = 0; i <= ((data.length - 1) + (daysKeys.length - 1)); ++i) {
+    if (i === Number(daysKeys[daysIndex])) {
       finalArr.push(days[daysKeys[daysIndex]]);
-      finalArr.push(item);
       ++daysIndex;
     } else {
-      finalArr.push(item);
+      finalArr.push(data[sceneIndex]);
+      ++sceneIndex
     }
-  });
+  }
   return finalArr;
+
 }

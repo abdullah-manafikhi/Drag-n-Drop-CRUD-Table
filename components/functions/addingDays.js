@@ -1,7 +1,7 @@
 export default function addingDays(data) {
     let counter = 0;
     let dayCount = 1;
-    let finalArr = [{ id: `d_${1}`, day: `Day ${dayCount}`, counter: counter }];
+    let finalArr = [{ id: `1`, day: `Day ${dayCount}`, counter: counter }];
     ++dayCount;
     data.forEach((line, index) => {
         if (line.hasOwnProperty("page_length")) {
@@ -10,7 +10,7 @@ export default function addingDays(data) {
         finalArr.push(line);
         if (counter > 4.5) {
             finalArr.push({
-                id: `d_${dayCount}`,
+                id: `${dayCount}`,
                 day: `Day ${dayCount}`,
                 counter: counter,
             });

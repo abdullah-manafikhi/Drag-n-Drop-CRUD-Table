@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router'
 import TableContext from './context/TableContext.js.jsx';
 import Skeleton from './Skeleton.jsx';
-import DragTest from './dndUI/DragTest.jsx';
+import DragTest from './dndUI/DragZone.jsx';
 import sortAccordingFor from "./functions/sort.js";
 import { BiBrush } from 'react-icons/bi'
 import { DATA } from '../assets/data2'
@@ -10,6 +10,7 @@ import { PopOver } from './colorPallete/PopOver'
 import axios from 'axios'
 import addingDays from './functions/addingDays.js';
 import addingSavedDays from './functions/addingSavedDays.js';
+import { toast } from 'react-toastify'
 
 
 function Table() {
@@ -23,9 +24,12 @@ function Table() {
     useEffect(() => {
         if (itemPure.length > 0) {
             const arrayAfterSort = sortAccordingFor(itemPure, sortPrimery, 1, sortSecond, 1)
-            const sortAndDay = addingDays(arrayAfterSort)
-            setItems(sortAndDay)
-            if(isSaved){
+            // WHEN SELECTING DEFAULT PRIMARY SORT ADD DAY LINES AS IT WAS SAVED
+            if (Object.keys(tableInfo.days).length > 0) {
+                const sortAndDay = (sortPrimery === "id") ? addingSavedDays(arrayAfterSort, tableInfo.days) : addingDays(arrayAfterSort)
+                setItems(sortAndDay)
+            }
+            if (isSaved) {
                 setIsSaved(false)
             }
         }
@@ -33,15 +37,20 @@ function Table() {
 
     useEffect(() => {
         (async () => {
-            const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/2")
-            const res = await test.json()
-            setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
-            setItemPure(res.table_content)
-            if (Object.keys(res.days).length > 0) {
-                setItems(addingSavedDays(res.table_content, res.days))
+            try {
+                const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/2")
+                const res = await test.json()
+                setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
+                setItemPure(res.table_content)
+                if (Object.keys(res.days).length > 0) {
+                    setItems(addingSavedDays(res.table_content, res.days))
+                }
+                else {
+                    setItems(addingDays(res.table_content))
+                }
             }
-            else {
-                setItems(addingDays(res.table_content))
+            catch (err) {
+                toast.error(`${err.message}`)
             }
         })()
         // setItems(addingDays(DATA.table_content))
@@ -64,6 +73,8 @@ function Table() {
             [day]: { backgroundColor: clr, color: "#000000" }
         }))
     }
+
+    // COLOR OPTIONS FOR THE LINES
     const presetColors = ["#3C486B", "#F0F0F0", "#F9D949", "#F45050", "#3A98B9", "#FFF1DC", "#E8D5C4", "#EEEEEE"];
 
     const router = useRouter()
@@ -75,15 +86,24 @@ function Table() {
                 days = { ...days, [index]: item }
             }
         })
+        console.log(days)
         const itemsNoDays = items.filter(item => !(item.hasOwnProperty("day")))
         const tableName = tableInfo.name.replaceAll('\\"', "")
-        const response = await axios.put(
-            `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
-            { name: tableName, table_content: JSON.stringify(itemsNoDays), days: JSON.stringify(days) }
-        )
-        console.log(response)
-        router.push("/print")
-        setIsSaved(true)
+        try {
+            const response = await axios.put(
+                `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
+                { name: tableName, table_content: JSON.stringify(itemsNoDays), days: {}}
+            )
+            if (response.status === 200) {
+                toast.success("Saved successfully")
+            }
+            router.push("/print")
+            setIsSaved(true)
+        }
+        catch (err) {
+            console.log(err)
+            toast.error(`${err.message}`)
+        }
     }
 
     return (
@@ -144,7 +164,7 @@ function Table() {
 
             {/* =============== TABLE =============== */}
             <main className='my-container'>
-                <div draggable className='table-grid '>
+                <div draggable className='table-grid lines-width'>
                     {/* This is the main row  */}
                     <div id="tableTitle" className="row-grid">
                         <span className='text-white noprintdplay text-sm sm:text-lg font-bold mx-8'></span>

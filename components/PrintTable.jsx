@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import TableContext from './context/TableContext.js';
-import SortableItemForPrint from './SortableItemForPrint';
+import SortableItemForPrint from './PrintSortableItem';
 import {MdDownload} from 'react-icons/md'
 import {BsChevronLeft} from 'react-icons/bs'
 

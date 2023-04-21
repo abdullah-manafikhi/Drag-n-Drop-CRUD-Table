@@ -1,15 +1,16 @@
-import { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { PropTypes } from "prop-types";
 import TableContext from '../context/TableContext.js.jsx';
-import SortableItemTest from "./SortableItemTest";
+import SortableItem from "./SortableItem";
+import PrintSortableItem from "../PrintSortableItem.jsx";
 
 
-function DragTest({ items, style4 }) {
+function DragZone({ items, style4 }) {
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const [touch, setTouch] = useState(false)
 
-    const { setCursor, addLine, setAddLine, setItems, selectedLine, isSaved, setIsSaved } = useContext(TableContext);
+    const { addLine, setAddLine, setItems, selectedLine, isSaved, setIsSaved } = useContext(TableContext);
 
     useEffect(() => {
         setData(items)
@@ -27,6 +28,8 @@ function DragTest({ items, style4 }) {
             const secondPart = data.slice(addLine.index + 1, data.length)
             newItems = newItems.concat(secondPart)
             setItems(newItems)
+
+            // TO PREVENT REFRESHING
             if (isSaved) {
                 setIsSaved(false)
             }
@@ -42,7 +45,7 @@ function DragTest({ items, style4 }) {
         if (!isSaved) {
             window.addEventListener("beforeunload", beforeunload);
         }
-        else{
+        else {
             window.removeEventListener("beforeunload", beforeunload)
         }
         return () => {
@@ -50,20 +53,33 @@ function DragTest({ items, style4 }) {
             // router.events.off("routeChangeStart", shit);
         };
     }, [isSaved]);
-    console.log(isSaved)
 
     // ===========================================
     // *************** MOUSE EVENTS **************
     // ===========================================
 
-    let x = null
-    let dragFlag = false
+    // let x = null
+    // let dragFlag = false
+
+    useEffect(() => {
+        console.log("shit")
+        globalThis.x = null
+        globalThis.dragFlag = false
+    }, [])
+
+    const [dragOverlay, setDragOverlay] = useState(null)
+    // const dragOverlay = useRef(null)
+    const fuckshit = useRef()
 
     const onDragStart = (e, index) => {
         e.currentTarget.classList.add("hello")
-
+        e.dataTransfer.setDragImage(e.target, window.outerWidth, window.outerHeight)
+        setDragOverlay(items[index])
+        setOverlayStyle(prev => ({ top: e.clientY, transition: "100ms" }))
+        // dragOverlay.current = (items[index])
         // check the clearTimout in the dragEnd event 
         x = setTimeout(() => {
+            console.log("drag start")
             dragFlag = true
             e.target.classList.add("dragging")
             dragItem.current = { data: data[index], index: index };
@@ -77,7 +93,17 @@ function DragTest({ items, style4 }) {
         }, 300)
     };
 
+    const [overlayStyle, setOverlayStyle] = useState({})
+
+    const onDragOver = (e) => {
+        e.preventDefault()
+    }
+
     const onDragEnter = (e, index) => {
+        // this condition is for preventing the overlay element from blocking the drag scroll
+        if (e.clientY < window.innerHeight * 0.9 && e.clientY > window.innerHeight * 0.1) {
+            setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
+        }
         dragOverItem.current = { data: data[index], index: index };
         if (dragFlag) {
             e.preventDefault();
@@ -89,13 +115,19 @@ function DragTest({ items, style4 }) {
     const onDragLeave = (e) => {
         e.preventDefault();
         if (dragFlag) {
-            // after dragging a line when leaving an enteed line remove "dragging class"
+            // after dragging a line when leaving an entered line remove "dragging class"
             e.currentTarget.classList.remove("dragging");
         }
     };
 
     const onDragEnd = (e) => {
+        setDragOverlay(null)
+        // dragOverlay.current = null
+        console.log(dragFlag)
         if (dragFlag) {
+            console.log(e.currentTarget)
+            e.currentTarget.classList.remove("hello")
+            console.log(dragOverItem.current)
             e.preventDefault();
             const newData = [...data];
             newData.splice(dragItem.current.index, 1);
@@ -113,6 +145,9 @@ function DragTest({ items, style4 }) {
             }
         }
         else {
+            console.log("its fucking")
+            setDragOverlay(null)
+            // dragOverlay.current = null
             clearTimeout(x)
             dragItem.current = null
         }
@@ -144,6 +179,7 @@ function DragTest({ items, style4 }) {
             }, 300)
         }
     }
+
 
     const pointerMove = (e, index) => {
         if (e.pointerType !== "mouse") {
@@ -240,32 +276,41 @@ function DragTest({ items, style4 }) {
         }
     }
 
+    console.log(items)
+
     return (
         <div
             id="container"
-            className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
+            className={`relative w-auto gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             <>
-                {/* ========================== DELETE modal =================== */}
-                <div className="modal" id="my-modal-2">
-                    <div className="modal-box">
-                        <p className="py-4">Are you sure you want to delete <strong>{selectedLine.scene || selectedLine.day || selectedLine.note}</strong>!</p>
-                        <div className="modal-action">
-                            <a href={`#cls`} className="btn btn-ghost">Cancel</a>
-                            <a href="#cls" className="btn bg-red-500 border-none" onClick={(e) => onDelete(e)}>Delete</a>
-                        </div>
-                    </div>
-                </div>
+                <span
+                    style={overlayStyle}
+                    className={`${dragOverlay !== null ? "fixed" : "hidden"} lines-width mx-auto`}
+                    ref={fuckshit}
+                >
+                    {dragOverlay !== null ? (
+                        <PrintSortableItem
+                            key={dragOverlay.id}
+                            index={1000}
+                            id={dragOverlay.id}
+                            line={dragOverlay}
+                            value={`Item ${dragOverlay.id}`}
+                        />
+                    ) : ""}
+                </span>
+
                 {data.map((line, index) => (
                     <div
                         draggable
                         key={index}
                         id={line.id}
                         className={`w-full cursor-move draggable transition-transform draggable-line`}
+
                         onDragStart={(e) => onDragStart(e, index)}
-                        onDragOver={(e) => e.preventDefault()}
                         onDragEnter={(e) => onDragEnter(e, index)}
                         onDragLeave={(e) => onDragLeave(e, index)}
+                        onDragOver={(e) => onDragOver(e)}
                         onDragEnd={(e) => onDragEnd(e, index)}
 
                         onPointerDown={(e) => pointerDown(e, index)}
@@ -273,7 +318,7 @@ function DragTest({ items, style4 }) {
                         onPointerUp={(e) => pointerUp(e, index)}
                         onPointerCancel={(e) => { onPointerCancel(e) }}
                     >
-                        <SortableItemTest
+                        <SortableItem
                             key={line.id}
                             index={index}
                             id={line.id}
@@ -284,15 +329,25 @@ function DragTest({ items, style4 }) {
                     </div>
                 ))}
             </>
+            {/* ========================== DELETE MODAL =================== */}
+            <div className="modal" id="my-modal-2">
+                <div className="modal-box">
+                    <p className="py-4">Are you sure you want to delete <strong>{selectedLine.scene || selectedLine.day || selectedLine.note}</strong>!</p>
+                    <div className="modal-action">
+                        <a href={`#cls`} className="btn btn-ghost">Cancel</a>
+                        <a href="#cls" className="btn bg-red-500 border-none" onClick={(e) => onDelete(e)}>Delete</a>
+                    </div>
+                </div>
+            </div>
         </div >)
 }
 
-DragTest.defaultProps = {
+DragZone.defaultProps = {
     data: [],
 };
 
-DragTest.propTypes = {
+DragZone.propTypes = {
     data: PropTypes.array,
 };
 
-export default DragTest;
+export default DragZone;
