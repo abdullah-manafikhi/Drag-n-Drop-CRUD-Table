@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useContext, useLayoutEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { PropTypes } from "prop-types";
 import TableContext from '../context/TableContext.js.jsx';
 import SortableItem from "./SortableItem";
@@ -6,7 +6,8 @@ import PrintSortableItem from "../PrintSortableItem.jsx";
 import { gsap } from "gsap";
 
 
-function DragZone({ items, style4 }) {
+
+function DragTest({ items, style4 }) {
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const [touch, setTouch] = useState(false)
@@ -16,27 +17,40 @@ function DragZone({ items, style4 }) {
     useEffect(() => {
         setData(items)
     }, [items])
-    // start gsap animation 
-    const container = useRef(null);
-    useLayoutEffect(() => {
-        let theTargetAnimation = gsap.utils.toArray("#container  div.gsapTargetLol")
-        function getFirstTenItems(arr) {
-            console.log(arr.slice(0, 10))
-            return arr.slice(0, 10);
-        }
-        let ctx = gsap.context(() => {
 
-            gsap.fromTo(getFirstTenItems(theTargetAnimation), { y: 10, duration: 1, stagger: 0.1 }, { y: 0, duration: 0.5, stagger: 0.1 })
+    // gsap 
+    // gsap start
+    const gsapTargetScope = useRef(null);
 
-        }, container);
-        return () => ctx.revert();
-    }, [items])
-    // end gsap animation 
+    useEffect(() => {
+  
+      let ctx = gsap.context(() => {
 
+       if(dragItem.current) { 
+        let targetId = dragItem.current.data.id
+        gsap.from(`div#${dragItem.current.data.id}`, { x: 10,delay:0.7, duration: 0.5 });
+        //gsap.to(".square2", { rotate: 360, duration: 5 });
+        //gsap.to(".square3", { rotate: 360, duration: 5 });
+    }
+  
+      }, gsapTargetScope);
+  
+      return () => ctx.revert();
+  
+    }, [data])
+  
+
+
+
+
+    // gsap end
+  
     // ========= USERREFs =========
     const dragItem = useRef(null);
     // the line that the pointer is over it after dragging a line
     const dragOverItem = useRef(null);
+    if(dragItem.current){console.log(dragItem.current.data.id)}
+    // if(dragOverItem.current){console.log(dragOverItem.current.data.id)}  
 
     useEffect(() => {
         if (addLine.type) {
@@ -298,7 +312,7 @@ function DragZone({ items, style4 }) {
     return (
         <div
             id="container"
-            ref={container}
+            ref={gsapTargetScope}
             className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             <>

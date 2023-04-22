@@ -46,7 +46,7 @@ function SortableItem(props) {
             newItems[props.index] = { ...formData }
             return newItems
         })
-        if(isSaved){
+        if (isSaved) {
             setIsSaved(false)
         }
         setInputDisabled(true)
@@ -142,8 +142,7 @@ function SortableItem(props) {
                         <>
                             <div title="Hold to Drag!" id={`n_${props.id}`} className={`row-grid-note touch-manipulation z-1`}>
                                 <span className='w-auto noprintdplay m-auto flex justify-evenly'>
-                                    {/* inputDisable ?  *** ENOUGH *** */}
-                                    {inputDisabled === true ?
+                                    {inputDisabled ?
                                         <>
                                             <button aria-label="edit" className=' btn btn-xs btn-ghost' onClick={(e) => onEditClick(e)}><BiEditAlt /></button>
                                             <a aria-label="delete" className=' btn btn-xs btn-ghost text-red-600' href="#my-modal-2" onClick={() => setSelectedLine(formData)}><BiTrash /></a>
