@@ -19,19 +19,17 @@ function DragZone({ items, style4 }) {
     // start gsap animation 
     const container = useRef(null);
     useLayoutEffect(() => {
-        let theTargetAnimation  =  gsap.utils.toArray("#container  div.gsapTargetLol")
+        let theTargetAnimation = gsap.utils.toArray("#container  div.gsapTargetLol")
         function getFirstTenItems(arr) {
             console.log(arr.slice(0, 10))
             return arr.slice(0, 10);
         }
         let ctx = gsap.context(() => {
 
-        gsap.fromTo(getFirstTenItems(theTargetAnimation), { y: 10, duration: 1 , stagger : 0.1} ,{ y: 0, duration: 0.5 , stagger : 0.1})
+            gsap.fromTo(getFirstTenItems(theTargetAnimation), { y: 10, duration: 1, stagger: 0.1 }, { y: 0, duration: 0.5, stagger: 0.1 })
 
-        
-
-    }, container);
-    return () => ctx.revert();
+        }, container);
+        return () => ctx.revert();
     }, [items])
     // end gsap animation 
 
