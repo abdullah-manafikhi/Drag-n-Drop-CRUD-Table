@@ -12,7 +12,7 @@ function DragZone({ items, style4 }) {
     const [refresh, setRefresh] = useState(false);
     const [touch, setTouch] = useState(false)
 
-    const { addLine, setAddLine, setItems, selectedLine, isSaved, setIsSaved } = useContext(TableContext);
+    const { addLine, setAddLine, setItems ,tableInfo, selectedLine, isSaved, setIsSaved } = useContext(TableContext);
 
     useEffect(() => {
         setData(items)
@@ -29,7 +29,7 @@ function DragZone({ items, style4 }) {
             if (dragItem.current) {
                 console.log(dragItem.current.data.id)
                 let targetId = dragItem.current.data.id
-                gsap.from(`div#${dragItem.current.data.id}`, { x: 10, delay: 0.7, duration: 0.5 });
+                gsap.from(`div.l_${dragItem.current.data.id}`, { x: 10, delay: 0.7, duration: 0.5 });
                 //gsap.to(".square2", { rotate: 360, duration: 5 });
                 //gsap.to(".square3", { rotate: 360, duration: 5 });
             }
@@ -319,7 +319,7 @@ function DragZone({ items, style4 }) {
             <>
                 <span
                     style={overlayStyle}
-                    className={`${dragOverlay !== null ? "fixed" : "hidden"} lines-width mx-auto`}
+                    className={`${dragOverlay !== null ? "fixed" : "hidden"} overflow-visible lines-width mx-auto`}
                     ref={fuckshit}
                 >
                     {dragOverlay !== null ? (

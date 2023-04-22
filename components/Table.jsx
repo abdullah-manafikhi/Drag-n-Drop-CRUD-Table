@@ -67,13 +67,13 @@ function Table() {
             return arr.slice(0, 10);
         }
         let ctx = gsap.context(() => {
-
-            gsap.fromTo(getFirstTenItems(theTargetAnimation),
-                { x: 3000, duration: 0.9, stagger: 0.01 },
-                { x: 0, duration: 0.9, stagger: .1 })
+            // let tl = gsap.timeline()
+            // tl.from(getFirstTenItems(theTargetAnimation),
+            // { x: -300, duration: 0.9, stagger: 0.4 },)
+            // .set(getFirstTenItems(theTargetAnimation),{ x: 0,stagger: 0.4 })
         }, containerForGsap);
         return () => ctx.revert();
-    }, [items])
+    }, [itemPure])
     // end gsap animation 
 
 
