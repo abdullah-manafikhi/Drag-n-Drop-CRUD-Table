@@ -186,6 +186,7 @@ function Table() {
 
                     </div>
                     {/* This component is for displaying the rest of the table that has the DnD functionality */}
+                    {/* <Skeleton /> */}
                     {items.length > 0 ? <DragTest items={items} style4={style4} /> : (<Skeleton />)}
                 </div>
             </main>

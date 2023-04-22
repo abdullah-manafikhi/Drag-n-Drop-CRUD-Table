@@ -32,7 +32,7 @@ function PrintTable() {
                     </button>
                 </div>
                 <main className='my-container printpage'>
-                    <div className='table-grid'>
+                    <div className='table-grid m-auto'>
                         {/* This is the main row where the columns names sits */}
                         <div id="tableTitle" className="row-grid">
                             <span className='text-white text-sm sm:text-lg font-bold m-auto'>Scene No.</span>
