@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 
 
 
-function DragTest({ items, style4 }) {
+function DragZone({ items, style4 }) {
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const [touch, setTouch] = useState(false)
@@ -23,33 +23,34 @@ function DragTest({ items, style4 }) {
     const gsapTargetScope = useRef(null);
 
     useEffect(() => {
-  
-      let ctx = gsap.context(() => {
 
-       if(dragItem.current) { 
-        let targetId = dragItem.current.data.id
-        gsap.from(`div#${dragItem.current.data.id}`, { x: 10,delay:0.7, duration: 0.5 });
-        //gsap.to(".square2", { rotate: 360, duration: 5 });
-        //gsap.to(".square3", { rotate: 360, duration: 5 });
-    }
-  
-      }, gsapTargetScope);
-  
-      return () => ctx.revert();
-  
+        let ctx = gsap.context(() => {
+
+            if (dragItem.current) {
+                console.log(dragItem.current.data.id)
+                let targetId = dragItem.current.data.id
+                gsap.from(`div#${dragItem.current.data.id}`, { x: 10, delay: 0.7, duration: 0.5 });
+                //gsap.to(".square2", { rotate: 360, duration: 5 });
+                //gsap.to(".square3", { rotate: 360, duration: 5 });
+            }
+
+        }, gsapTargetScope);
+
+        return () => ctx.revert();
+
     }, [data])
-  
+
 
 
 
 
     // gsap end
-  
+
     // ========= USERREFs =========
     const dragItem = useRef(null);
     // the line that the pointer is over it after dragging a line
     const dragOverItem = useRef(null);
-    if(dragItem.current){console.log(dragItem.current.data.id)}
+    if (dragItem.current) { console.log(dragItem.current.data.id) }
     // if(dragOverItem.current){console.log(dragOverItem.current.data.id)}  
 
     useEffect(() => {

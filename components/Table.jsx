@@ -69,8 +69,8 @@ function Table() {
         let ctx = gsap.context(() => {
 
             gsap.fromTo(getFirstTenItems(theTargetAnimation),
-                { y: 20, duration: 0.9, stagger: 0.25 },
-                { y: 0, duration: 0.9, stagger: 0.1 })
+                { x: 3000, duration: 0.9, stagger: 0.01 },
+                { x: 0, duration: 0.9, stagger: .1 })
         }, containerForGsap);
         return () => ctx.revert();
     }, [items])

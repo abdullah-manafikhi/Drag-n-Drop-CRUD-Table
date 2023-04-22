@@ -22,8 +22,7 @@ function Skeleton() {
           gsap.from("span", {
             x: -85,
             // y: 10, 
-            duration: 0.7 , 
-            delay : .1 ,
+            duration: 0.3 , 
             stagger: 0.1
           });
 
