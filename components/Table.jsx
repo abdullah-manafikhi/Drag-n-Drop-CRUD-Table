@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useContext, useLayoutEffect } from "react";
+import { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useRouter } from 'next/router'
 import TableContext from './context/TableContext.js.jsx';
 import Skeleton from './Skeleton.jsx';
@@ -12,6 +12,7 @@ import addingDays from './functions/addingDays.js';
 import addingSavedDays from './functions/addingSavedDays.js';
 import { toast } from 'react-toastify'
 import { gsap } from "gsap";
+import Fade from 'react-reveal/Fade';
 
 
 function Table() {
@@ -30,20 +31,23 @@ function Table() {
                 const sortAndDay = (sortPrimery === "id") ? addingSavedDays(arrayAfterSort, tableInfo.days) : addingDays(arrayAfterSort)
                 setItems(sortAndDay)
             }
+            else {
+                setItems(addingDays(arrayAfterSort))
+            }
             if (isSaved) {
                 setIsSaved(false)
             }
         }
     }, [sortPrimery, sortSecond])
 
-    useEffect(() => {
+    useMemo(() => {
         (async () => {
             try {
-                const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/2")
+                const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/17")
                 const res = await test.json()
                 setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
                 setItemPure(res.table_content)
-                if (Object.keys(res.days).length > 0) {
+                if (res.hasOwnProperty("days") && Object.keys(res.days).length > 0) {
                     setItems(addingSavedDays(res.table_content, res.days))
                 }
                 else {
@@ -51,29 +55,53 @@ function Table() {
                 }
             }
             catch (err) {
+                console.log(err)
                 toast.error(`${err.message}`)
             }
         })()
-        // setItems(addingDays(DATA.table_content))
-        // setItemPure(DATA.table_content)
     }, [])
+
+    // useEffect(() => {
+    //     console.log("rendering");
+    //     (async () => {
+    //         try {
+    //             const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/17")
+    //             const res = await test.json()
+    //             console.log(res)
+    //             setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
+    //             setItemPure(res.table_content)
+    //             if (res.hasOwnProperty("days") && Object.keys(res.days).length > 0) {
+    //                 setItems(addingSavedDays(res.table_content, res.days))
+    //             }
+    //             else {
+    //                 setItems(addingDays(res.table_content))
+    //             }
+    //         }
+    //         catch (err) {
+    //             console.log(err)
+    //             toast.error(`${err.message}`)
+    //         }
+    //     })()
+    //     // setItems(addingDays(DATA.table_content))
+    //     // setItemPure(DATA.table_content)
+    // }, [])
     // gsap lol 
     // start gsap animation 
-    const containerForGsap = useRef(null);
-    useLayoutEffect(() => {
-        let theTargetAnimation = gsap.utils.toArray("#container  div.gsapTargetLol")
-        function getFirstTenItems(arr) {
-            //   console.log(arr.slice(0, 10))
-            return arr.slice(0, 10);
-        }
-        let ctx = gsap.context(() => {
-            // let tl = gsap.timeline()
-            // tl.from(getFirstTenItems(theTargetAnimation),
-            // { x: -300, duration: 0.9, stagger: 0.4 },)
-            // .set(getFirstTenItems(theTargetAnimation),{ x: 0,stagger: 0.4 })
-        }, containerForGsap);
-        return () => ctx.revert();
-    }, [itemPure])
+    // useLayoutEffect(() => {
+    //     // let theTargetAnimation = gsap.utils.toArray("#container  div.gsapTargetLol")
+    //     // function getFirstTenItems(arr) {
+    //     //     console.log(arr)
+    //     //     return arr.slice(0, 10);
+    //     // }
+    //     let ctx = gsap.context(() => {
+    //         let tl = gsap.timeline()
+    //         // getFirstTenItems(theTargetAnimation),
+    //         tl.from(
+    //             { x: 300, duration: 0.9, stagger: 0.4 })
+    //             .set(getFirstTenItems(theTargetAnimation), { x: 0, stagger: 0.4 })
+    //     }, containerForGsap);
+    //     return () => ctx.revert();
+    // }, [])
     // end gsap animation 
 
 
@@ -99,120 +127,114 @@ function Table() {
 
     const router = useRouter()
 
-    const onSave = async (e) => {
-        let days = {}
-        items.forEach((item, index) => {
-            if (item.hasOwnProperty("day")) {
-                days = { ...days, [index]: item }
-            }
-        })
-        console.log(days)
-        const itemsNoDays = items.filter(item => !(item.hasOwnProperty("day")))
-        const tableName = tableInfo.name.replaceAll('\\"', "")
-        try {
-            const response = await axios.put(
-                `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
-                { name: tableName, table_content: JSON.stringify(itemsNoDays), days: {} }
-            )
-            if (response.status === 200) {
-                toast.success("Saved successfully")
-            }
-            router.push("/print")
-            setIsSaved(true)
-        }
-        catch (err) {
-            console.log(err)
-            toast.error(`${err.message}`)
-        }
-    }
+    // const containerForGsap = useRef(null);
+    // useEffect(() => {
+    //     let ctx = gsap.context(() => {
+    //         gsap.from(".shit", {
+    //             opacity: 0,
+    //             // y: 10, 
+    //             duration: .5,
+    //             stagger: 0.15
+    //         });
+
+    //     }, containerForGsap);
+    //     return () => ctx.revert();
+    // },[itemPure])
+
 
     return (
-        <div ref={containerForGsap}>
-            <h1 className=' text-3xl font-bold mx-auto w-fit mt-6 mb-10 '>{tableInfo.name} Strip Board</h1>
-            <div className="noprintdplay w-60 h-auto mx-auto p-2 flex justify-between">
-                {/* SAVE BUTTON */}
-                <button onClick={onSave} className={`btn btn-sm border-none`}>
-                    save
-                </button>
+        <div>
+            <Fade top>
+                {tableInfo.hasOwnProperty("id") ? (<h1 className={`text-3xl font-bold mx-auto w-fit mt-6 mb-10 shit`}>{tableInfo.name} Strip Board</h1>) : (<h2 className='text-5xl my-6 invisible'>shit</h2>)}
+                <div className={`noprintdplay w-60 h-auto mx-auto p-2 flex justify-center shit`}>
+                    {/* DESGIN BUTTON */}
+                    <label htmlFor="design-modal" className="btn btn-sm btn-ghost w-32 flex flex-initial justify-evenly">
+                        Design <BiBrush className='h-4 w-4' />
+                    </label>
+                </div>
 
-                {/* DESGIN BUTTON */}
-                <label htmlFor="design-modal" className="btn btn-sm btn-ghost w-32 flex flex-initial justify-evenly">
-                    Design <BiBrush className='h-4 w-4' />
-                </label>
-            </div>
+                {/* ============= SORT SELECT =============== */}
+                <div className={`w-fit m-auto shit`}>
+                    <div className="navbar bg-base-300 rounded-box my-4">
+                        <div className="flex justify-end flex-1 px-2">
+                            <div className="flex  items-center  ">
+                                <h2 className="btn btn-ghost rounded-btn">Sort</h2>
+                                <div className='flex flex-auto w-auto items-center'>
+                                    <select value={sortPrimery} onChange={onOptionChangeHandler1} className="select select-xs my-1 text-xs select-primary w-auto max-w-xs border-none"  >
+                                        <option disabled>Primery</option>
+                                        <option value={'id'}  >Default </option>
+                                        <option value={'camera'}  >Camera </option>
+                                        <option value={'summary'} >Summary</option>
+                                        <option value={'location'} >Location</option>
+                                        <option value={'page_length'} >Page Length </option>
+                                    </select>
 
-            {/* ============= SORT SELECT =============== */}
-            <div className='w-fit m-auto'>
-                <div className="navbar bg-base-300 rounded-box my-4">
-                    <div className="flex justify-end flex-1 px-2">
-                        <div className="flex  items-center  ">
-                            <h2 className="btn btn-ghost rounded-btn">Sort</h2>
-                            <div className='flex flex-auto w-auto items-center'>
-                                <select value={sortPrimery} onChange={onOptionChangeHandler1} className="select select-xs my-1 text-xs select-primary w-auto max-w-xs border-none"  >
-                                    <option disabled>Primery</option>
-                                    <option value={'id'}  >Default </option>
-                                    <option value={'camera'}  >Camera </option>
-                                    <option value={'summary'} >Summary</option>
-                                    <option value={'location'} >Location</option>
-                                    <option value={'page_length'} >Page Length </option>
-                                </select>
+                                    <span className='mx-2'> 	&amp; </span>
 
-                                <span className='mx-2'> 	&amp; </span>
-
-                                <select value={sortSecond} onChange={onOptionChangeHandler2} className="select select-xs my-1  select-primary w-auto max-w-xs border-none">
-                                    <option disabled  >Secondery</option>
-                                    <option value={'id'} >Default </option>
-                                    <option value={'camera'} >Camera </option>
-                                    <option value={'summary'} >Summary</option>
-                                    <option value={'location'} >Location</option>
-                                    <option value={'page_length'} >Page Length </option>
-                                </select>
+                                    <select value={sortSecond} onChange={onOptionChangeHandler2} className="select select-xs my-1  select-primary w-auto max-w-xs border-none">
+                                        <option disabled  >Secondery</option>
+                                        <option value={'id'} >Default </option>
+                                        <option value={'camera'} >Camera </option>
+                                        <option value={'summary'} >Summary</option>
+                                        <option value={'location'} >Location</option>
+                                        <option value={'page_length'} >Page Length </option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/*============ PLUS BUTTON FOR ADDING NEW LINES ============  */}
-            <div className="noprintdplay mx-auto p-4 fixed bottom-12 right-1 opacity-100 z-50 grid justify-items-end">
-                <button onClick={() => setAdding(prevState => ({ ...prevState, isAdding: !prevState.isAdding }))} className={`btn ${adding.isAdding ? "btn-error" : "btn-outline "} h-16 w-16 relative rounded-full`}>
-                    <span className={`font-normal ${adding.isAdding ? "text-2xl mb-1 text-white" : "text-5xl mb-2"} text-2xl rounded-full h-fit w-fit `}>
-                        {adding.isAdding ? "x" : "+"}
-                    </span>
-                </button>
-            </div>
+                {/*============ PLUS BUTTON FOR ADDING NEW LINES ============  */}
+                <div className="noprintdplay mx-auto p-4 fixed bottom-12 right-1 opacity-100 z-50 grid justify-items-end">
+                    <button onClick={() => setAdding(prevState => ({ ...prevState, isAdding: !prevState.isAdding }))} className={`btn ${adding.isAdding ? "btn-error" : "btn-outline "} h-16 w-16 relative rounded-full`}>
+                        <span className={`font-normal ${adding.isAdding ? "text-2xl mb-1 text-white" : "text-5xl mb-2"} text-2xl rounded-full h-fit w-fit `}>
+                            {adding.isAdding ? "x" : "+"}
+                        </span>
+                    </button>
+                </div>
+            </Fade>
 
             {/* =============== TABLE =============== */}
-            <main className='my-container'>
+            <main className={`my-container shit`} >
                 <div draggable className='table-grid lines-width'>
                     {/* This is the main row  */}
                     <div id="tableTitle" className="row-grid">
                         <span className='text-white noprintdplay text-sm sm:text-lg font-bold mx-8'></span>
-                        <span onClick={() => theadSortbyHundler('id')} className='text-white flex h-full items-center text-sm sm:text-lg font-bold m-auto'>
-                            Scene No.
-                        </span>
-                        <span onClick={() => theadSortbyHundler('camera')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
-                            Camera
-                        </span>
-                        <span onClick={() => theadSortbyHundler('summary')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
-                            Summary
-                        </span>
-                        <span onClick={() => theadSortbyHundler('location')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
-                            Location
-                        </span>
-                        <span onClick={() => theadSortbyHundler('page_length')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold mx-8'>
-                            Page length
-                        </span>
-
-                    </div>
+                        <Fade left >
+                            <span onClick={() => theadSortbyHundler('id')} className='text-white flex h-full items-center text-sm sm:text-lg font-bold m-auto'>
+                                Scene No.
+                            </span>
+                        </Fade>
+                        <Fade left delay={200}>
+                            <span onClick={() => theadSortbyHundler('camera')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
+                                Camera
+                            </span>
+                        </Fade>
+                        <Fade left delay={400}>
+                            <span onClick={() => theadSortbyHundler('summary')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
+                                Summary
+                            </span>
+                        </Fade>
+                        <Fade left delay={600}>
+                            <span onClick={() => theadSortbyHundler('location')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
+                                Location
+                            </span>
+                        </Fade>
+                        <Fade left delay={800}      >
+                            <span onClick={() => theadSortbyHundler('page_length')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold mx-8'>
+                                Page length
+                            </span>
+                        </Fade>
+                    </div >
                     {/* This component is for displaying the rest of the table that has the DnD functionality */}
                     {items.length > 0 ? <DragTest items={items} style4={style4} /> : (<Skeleton />)}
-                </div>
-            </main>
+                </div >
+            </main >
 
 
             {/* This modal will be displayed when the design button is clicked */}
-            <input type="checkbox" id="design-modal" className="modal-toggle" />
+            < input type="checkbox" id="design-modal" className="modal-toggle" />
             <label htmlFor="design-modal" className="modal cursor-pointer overflow-visible">
                 <label className="modal-box w-10/12 sm:w-4/12 relative overflow-visible" htmlFor="">
                     <div className="flex flex-auto justify-between h-fit overflow-visible my-3">
@@ -229,7 +251,7 @@ function Table() {
                     </div>
                 </label>
             </label>
-        </div>
+        </div >
     )
 }
 

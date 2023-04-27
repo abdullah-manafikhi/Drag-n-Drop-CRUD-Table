@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useContext } from "react";
 import { PropTypes } from "prop-types";
 import TableContext from '../context/TableContext.js.jsx';
 import SortableItem from "./SortableItem";
 import PrintSortableItem from "../PrintSortableItem.jsx";
-import { gsap } from "gsap";
-
+import { MdSettingsEthernet } from "react-icons/md";
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 
 function DragZone({ items, style4 }) {
@@ -12,7 +13,7 @@ function DragZone({ items, style4 }) {
     const [refresh, setRefresh] = useState(false);
     const [touch, setTouch] = useState(false)
 
-    const { addLine, setAddLine, setItems ,tableInfo, selectedLine, isSaved, setIsSaved } = useContext(TableContext);
+    const { addLine, setAddLine, setItems, tableInfo, selectedLine, isSaved, setIsSaved } = useContext(TableContext);
 
     useEffect(() => {
         setData(items)
@@ -22,26 +23,23 @@ function DragZone({ items, style4 }) {
     // gsap start
     const gsapTargetScope = useRef(null);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        let ctx = gsap.context(() => {
+    //     let ctx = gsap.context(() => {
 
-            if (dragItem.current) {
-                console.log(dragItem.current.data.id)
-                let targetId = dragItem.current.data.id
-                gsap.from(`div.l_${dragItem.current.data.id}`, { x: 10, delay: 0.7, duration: 0.5 });
-                //gsap.to(".square2", { rotate: 360, duration: 5 });
-                //gsap.to(".square3", { rotate: 360, duration: 5 });
-            }
+    //         if (dragItem.current) {
+    //             console.log(dragItem.current.data.id)
+    //             let targetId = dragItem.current.data.id
+    //             gsap.from(`div.l_${dragItem.current.data.id}`, { x: 10, delay: 0.7, duration: 0.5 });
+    //             //gsap.to(".square2", { rotate: 360, duration: 5 });
+    //             //gsap.to(".square3", { rotate: 360, duration: 5 });
+    //         }
 
-        }, gsapTargetScope);
+    //     }, gsapTargetScope);
 
-        return () => ctx.revert();
+    //     return () => ctx.revert();
 
-    }, [data])
-
-
-
+    // }, [data])
 
 
     // gsap end
@@ -50,8 +48,6 @@ function DragZone({ items, style4 }) {
     const dragItem = useRef(null);
     // the line that the pointer is over it after dragging a line
     const dragOverItem = useRef(null);
-    if (dragItem.current) { console.log(dragItem.current.data.id) }
-    // if(dragOverItem.current){console.log(dragOverItem.current.data.id)}  
 
     useEffect(() => {
         if (addLine.type) {
@@ -86,15 +82,15 @@ function DragZone({ items, style4 }) {
         };
     }, [isSaved]);
 
+
     // ===========================================
     // *************** MOUSE EVENTS **************
     // ===========================================
 
-    // let x = null
-    // let dragFlag = false
+
 
     useEffect(() => {
-        console.log("shit")
+        // defining x and dragFlag globaly
         globalThis.x = null
         globalThis.dragFlag = false
     }, [])
@@ -137,6 +133,7 @@ function DragZone({ items, style4 }) {
             setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
         }
         dragOverItem.current = { data: data[index], index: index };
+        console.log(dragOverItem.current)
         if (dragFlag) {
             e.preventDefault();
             // after dragging a line when entering new line add "dragging class"
@@ -152,14 +149,11 @@ function DragZone({ items, style4 }) {
         }
     };
 
-    const onDragEnd = (e) => {
+    const onDragEnd = (e, index) => {
         setDragOverlay(null)
         // dragOverlay.current = null
-        console.log(dragFlag)
         if (dragFlag) {
-            console.log(e.currentTarget)
             e.currentTarget.classList.remove("hello")
-            console.log(dragOverItem.current)
             e.preventDefault();
             const newData = [...data];
             newData.splice(dragItem.current.index, 1);
@@ -171,15 +165,14 @@ function DragZone({ items, style4 }) {
             };
             setData(newData);
             setItems(newData)
+            onSave(newData)
             setRefresh((prev) => !prev);
             if (isSaved) {
                 setIsSaved(false)
             }
         }
         else {
-            console.log("its fucking")
             setDragOverlay(null)
-            // dragOverlay.current = null
             clearTimeout(x)
             dragItem.current = null
         }
@@ -191,12 +184,9 @@ function DragZone({ items, style4 }) {
     };
 
 
-
-
     // ===========================================
     // *************** TOUCH EVENTS **************
     // ===========================================
-
 
     let y = null
     const pointerDown = (e, index) => {
@@ -249,17 +239,18 @@ function DragZone({ items, style4 }) {
                 const current = heights.find((line) => { return (e.clientY) - (line.Y) < -10 });
                 dragOverItem.current = { data: data[current.index], index: current.index }
                 if (dragOverItem.current.data) {
-                    const test = [...data];
-                    test.splice(Number(dragItem.current.index), 1);
+                    const newData = [...data];
+                    newData.splice(Number(dragItem.current.index), 1);
                     // Adding item to the array
-                    test.splice(dragOverItem.current.index, 0, dragItem.current.data);
+                    newData.splice(dragOverItem.current.index, 0, dragItem.current.data);
                     dragItem.current = {
                         ...dragItem.current,
                         index: dragOverItem.current.index,
                     };
-                    setData(test);
-                    setItems(test)
+                    setData(newData);
+                    setItems(newData)
                     setRefresh((prev) => !prev);
+                    onSave(newData)
                     dragItem.current = null
                 }
                 if (isSaved) {
@@ -297,6 +288,59 @@ function DragZone({ items, style4 }) {
         }
     }
 
+    const onSave = async (newData) => {
+        let days = {}
+        newData.forEach((item, index) => {
+            if (item.hasOwnProperty("day")) {
+                days = { ...days, [index]: item }
+            }
+        })
+        if ((dragItem.current.data).hasOwnProperty("day")) {
+            try {
+                const response = await axios.put(
+                    `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
+                    { days: JSON.stringify(days) }
+                )
+                console.log(response)
+            }
+            catch (err) {
+                console.log(err)
+                toast.error(`${err.message}`)
+            }
+        }
+        else {
+            let itemsNoDays = []
+            let newIndexID = null
+            let newIndex
+            let originalIndex
+
+            items.forEach((item, index) => {
+                if (!item.hasOwnProperty("day")) {
+                    itemsNoDays.push(item)
+                }
+            })
+
+            originalIndex = itemsNoDays.findIndex(item => (Number(item.id) === Number(dragItem.current.data.id)))
+            if ((dragOverItem.current.data).hasOwnProperty("day")) {
+                newIndex = itemsNoDays.findIndex(item => (Number(item.id) === Number(items[Number(dragOverItem.current.index) - 1].id)))
+            }
+            else {
+                newIndex = itemsNoDays.findIndex(item => (Number(item.id) === Number(dragOverItem.current.data.id)))
+            }
+            try {
+                const response = await axios.put(
+                    `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
+                    { original_index: originalIndex, new_index: newIndex, days: JSON.stringify(days) }
+                )
+                console.log(response)
+            }
+            catch (err) {
+                console.log(err)
+                toast.error(`${err.message}`)
+            }
+        }
+    }
+
     const onDelete = (e) => {
         setItems(prevState => {
             let newItems = [...prevState]
@@ -308,59 +352,54 @@ function DragZone({ items, style4 }) {
         }
     }
 
-    console.log(items)
-
     return (
         <div
             id="container"
-            ref={gsapTargetScope}
             className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
-            <>
-                <span
-                    style={overlayStyle}
-                    className={`${dragOverlay !== null ? "fixed" : "hidden"} overflow-visible lines-width mx-auto`}
-                    ref={fuckshit}
+            <span
+                style={overlayStyle}
+                className={`${dragOverlay !== null ? "fixed" : "hidden"} overflow-visible lines-width mx-auto`}
+                ref={fuckshit}
+            >
+                {dragOverlay !== null ? (
+                    <PrintSortableItem
+                        key={dragOverlay.id}
+                        index={1000}
+                        id={dragOverlay.id}
+                        line={dragOverlay}
+                        value={`Item ${dragOverlay.id}`}
+                    />
+                ) : ""}
+            </span>
+
+            {data.map((line, index) => (
+                <div
+                    draggable
+                    key={index}
+                    id={line.id}
+                    className={`w-full gsapTargetLol cursor-move draggable transition-transform draggable-line`}
+                    onDragStart={(e) => onDragStart(e, index)}
+                    onDragEnter={(e) => onDragEnter(e, index)}
+                    onDragLeave={(e) => onDragLeave(e, index)}
+                    onDragOver={(e) => onDragOver(e)}
+                    onDragEnd={(e) => onDragEnd(e, index)}
+
+                    onPointerDown={(e) => pointerDown(e, index)}
+                    onPointerMove={(e) => pointerMove(e, index)}
+                    onPointerUp={(e) => pointerUp(e, index)}
+                    onPointerCancel={(e) => { onPointerCancel(e) }}
                 >
-                    {dragOverlay !== null ? (
-                        <PrintSortableItem
-                            key={dragOverlay.id}
-                            index={1000}
-                            id={dragOverlay.id}
-                            line={dragOverlay}
-                            value={`Item ${dragOverlay.id}`}
-                        />
-                    ) : ""}
-                </span>
-
-                {data.map((line, index) => (
-                    <div
-                        draggable
-                        key={index}
+                    <SortableItem
+                        key={line.id}
+                        index={index}
                         id={line.id}
-                        className={`w-full gsapTargetLol cursor-move draggable transition-transform draggable-line`}
-                        onDragStart={(e) => onDragStart(e, index)}
-                        onDragEnter={(e) => onDragEnter(e, index)}
-                        onDragLeave={(e) => onDragLeave(e, index)}
-                        onDragOver={(e) => onDragOver(e)}
-                        onDragEnd={(e) => onDragEnd(e, index)}
-
-                        onPointerDown={(e) => pointerDown(e, index)}
-                        onPointerMove={(e) => pointerMove(e, index)}
-                        onPointerUp={(e) => pointerUp(e, index)}
-                        onPointerCancel={(e) => { onPointerCancel(e) }}
-                    >
-                        <SortableItem
-                            key={line.id}
-                            index={index}
-                            id={line.id}
-                            line={line}
-                            style4={style4}
-                            value={`Item ${line.id}`}
-                        />
-                    </div>
-                ))}
-            </>
+                        line={line}
+                        style4={style4}
+                        value={`Item ${line.id}`}
+                    />
+                </div>
+            ))}
             {/* ========================== DELETE MODAL =================== */}
             <div className="modal" id="my-modal-2">
                 <div className="modal-box">
