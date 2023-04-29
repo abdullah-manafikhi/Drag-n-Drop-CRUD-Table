@@ -266,11 +266,11 @@ body {
 /* DND STYLING */
 .dragging {
   opacity: 0;
-  transition: 200ms;
-  -webkit-transition: 200ms;
-  -moz-transition: 200ms;
-  -ms-transition: 200ms;
-  -o-transition: 200ms;
+  transition: 10ms;
+  -webkit-transition: 10ms;
+  -moz-transition: 10ms;
+  -ms-transition: 10ms;
+  -o-transition: 10ms;
 }
 
 .hello {
