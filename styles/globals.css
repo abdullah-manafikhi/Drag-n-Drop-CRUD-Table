@@ -275,11 +275,13 @@ body {
 
 .hello {
   opacity: 0;
-  transition: 200ms;
-  -webkit-transition: 200ms;
-  -moz-transition: 200ms;
-  -ms-transition: 200ms;
-  -o-transition: 200ms;
+  width: 1px;
+  height: 1px;
+  transition: 300ms;
+  -webkit-transition: 300ms;
+  -moz-transition: 300ms;
+  -ms-transition: 300ms;
+  -o-transition: 300ms;
 }
 
 .testing {
