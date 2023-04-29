@@ -274,8 +274,7 @@ body {
 }
 
 .hello {
-  opacity: 0.5;
-  background-color: green;
+  opacity: 0.9;
   transition: 200ms;
   -webkit-transition: 200ms;
   -moz-transition: 200ms;

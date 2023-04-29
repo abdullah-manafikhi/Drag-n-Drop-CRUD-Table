@@ -19,30 +19,6 @@ function DragZone({ items, style4 }) {
         setData(items)
     }, [items])
 
-    // gsap 
-    // gsap start
-    const gsapTargetScope = useRef(null);
-
-    // useEffect(() => {
-
-    //     let ctx = gsap.context(() => {
-
-    //         if (dragItem.current) {
-    //             console.log(dragItem.current.data.id)
-    //             let targetId = dragItem.current.data.id
-    //             gsap.from(`div.l_${dragItem.current.data.id}`, { x: 10, delay: 0.7, duration: 0.5 });
-    //             //gsap.to(".square2", { rotate: 360, duration: 5 });
-    //             //gsap.to(".square3", { rotate: 360, duration: 5 });
-    //         }
-
-    //     }, gsapTargetScope);
-
-    //     return () => ctx.revert();
-
-    // }, [data])
-
-
-    // gsap end
 
     // ========= USERREFs =========
     const dragItem = useRef(null);
@@ -56,11 +32,14 @@ function DragZone({ items, style4 }) {
             const secondPart = data.slice(addLine.index + 1, data.length)
             newItems = newItems.concat(secondPart)
             setItems(newItems)
-
-            // TO PREVENT REFRESHING
-            if (isSaved) {
-                setIsSaved(false)
-            }
+            let params = {}
+            newItems.forEach((item, index) => {
+                if (item.hasOwnProperty("day") || item.hasOwnProperty("note")) {
+                    params = { ...params, [index]: item }
+                }
+            })
+            params = { days: JSON.stringify(params) }
+            putApiCall(params)
         }
     }, [addLine])
 
@@ -107,7 +86,6 @@ function DragZone({ items, style4 }) {
         // dragOverlay.current = (items[index])
         // check the clearTimout in the dragEnd event 
         x = setTimeout(() => {
-            console.log("drag start")
             dragFlag = true
             e.target.classList.add("dragging")
             dragItem.current = { data: data[index], index: index };
@@ -133,7 +111,6 @@ function DragZone({ items, style4 }) {
             setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
         }
         dragOverItem.current = { data: data[index], index: index };
-        console.log(dragOverItem.current)
         if (dragFlag) {
             e.preventDefault();
             // after dragging a line when entering new line add "dragging class"
@@ -165,11 +142,11 @@ function DragZone({ items, style4 }) {
             };
             setData(newData);
             setItems(newData)
-            onSave(newData)
-            setRefresh((prev) => !prev);
             if (isSaved) {
                 setIsSaved(false)
             }
+            onSave(newData)
+            setRefresh((prev) => !prev);
         }
         else {
             setDragOverlay(null)
@@ -272,7 +249,6 @@ function DragZone({ items, style4 }) {
 
     const onPointerCancel = (e) => {
         if (e.pointerType !== "mouse") {
-            console.log("pointer cancel")
             if (dragItem.current === null) {
                 setRefresh((prev) => !prev);
                 clearTimeout(y)
@@ -291,28 +267,18 @@ function DragZone({ items, style4 }) {
     const onSave = async (newData) => {
         let days = {}
         newData.forEach((item, index) => {
-            if (item.hasOwnProperty("day")) {
+            if (!item.hasOwnProperty("scene")) {
                 days = { ...days, [index]: item }
             }
         })
-        if ((dragItem.current.data).hasOwnProperty("day")) {
-            try {
-                const response = await axios.put(
-                    `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
-                    { days: JSON.stringify(days) }
-                )
-                console.log(response)
-            }
-            catch (err) {
-                console.log(err)
-                toast.error(`${err.message}`)
-            }
+        if (!(dragItem.current.data).hasOwnProperty("scene")) {
+            const params = { days: JSON.stringify(days) }
+            putApiCall(params)
         }
-        else {
+        else if ((dragItem.current.data).hasOwnProperty("scene"))  {
             let itemsNoDays = []
-            let newIndexID = null
-            let newIndex
             let originalIndex
+            let newIndex
 
             items.forEach((item, index) => {
                 if (!item.hasOwnProperty("day")) {
@@ -322,33 +288,83 @@ function DragZone({ items, style4 }) {
 
             originalIndex = itemsNoDays.findIndex(item => (Number(item.id) === Number(dragItem.current.data.id)))
             if ((dragOverItem.current.data).hasOwnProperty("day")) {
+                // IF THE DRAGGED OVER ITEM IS DAY OR NOTE LINE THEN WORK WITH PREVIOUS SCENE LINE
                 newIndex = itemsNoDays.findIndex(item => (Number(item.id) === Number(items[Number(dragOverItem.current.index) - 1].id)))
             }
             else {
                 newIndex = itemsNoDays.findIndex(item => (Number(item.id) === Number(dragOverItem.current.data.id)))
             }
-            try {
-                const response = await axios.put(
-                    `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`,
-                    { original_index: originalIndex, new_index: newIndex, days: JSON.stringify(days) }
-                )
-                console.log(response)
-            }
-            catch (err) {
-                console.log(err)
-                toast.error(`${err.message}`)
-            }
+            const params = { original_index: originalIndex, new_index: newIndex, days: JSON.stringify(days) }
+            putApiCall(params)
         }
     }
 
     const onDelete = (e) => {
-        setItems(prevState => {
-            let newItems = [...prevState]
-            newItems = newItems.filter(item => item.id !== selectedLine.id)
-            return newItems
-        })
-        if (isSaved) {
-            setIsSaved(false)
+        let days = {}
+
+        // IF THE DELETED LINE IS DAY OR NOTE LINE
+        if (!selectedLine.hasOwnProperty("scene")) {
+            // PUTTING THE DAYS & NOTE LINE IN AN OBJECT
+            data.forEach((item, index) => {
+                if (!selectedLine.hasOwnProperty("scene") && selectedLine.id !== item.id) {
+                    days = { ...days, [index]: item }
+                }
+            })
+            // DELETING IT FORM THE CLIENT SIDE
+            setItems(prevState => {
+                return prevState.filter(item => item.id !== selectedLine.id)
+            })
+            // DELETING IT ON FROM THE SERVER SIDE
+            const params = { days: JSON.stringify(days) }
+            putApiCall(params, true)
+        }
+
+        // IF THE DELETED LINE IS SCENE LINE
+        else if (selectedLine.hasOwnProperty("scene")) {
+            let itemsNoDays = []
+            items.forEach((item, index) => {
+                if (item.hasOwnProperty("scene")) {
+                    itemsNoDays.push(item)
+                }
+            })
+            const noDaysArrLen = itemsNoDays.length
+            // DELETING IT FROM THE CLIENT SIDE
+            setItems(prevState => {
+                let newItems = [...prevState]
+                newItems = newItems.filter((item, index) => {
+                    if ((index < noDaysArrLen && itemsNoDays[index]).id === selectedLine.id) {
+                        const params = { original_index: index, new_index: -1 }
+                        // DELETING FROM THE SERVER SIDE
+                        putApiCall(params, true)
+                    }
+                    if (item.id === selectedLine.id) {
+                        return false
+                    }
+                    else {
+                        return true
+                    }
+                })
+                return newItems
+            })
+        }
+    }
+
+    const putApiCall = async (params, isDelete) => {
+        setIsSaved(false)
+        try {
+            const response = await axios.put(
+                `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`, params)
+            if (response.status === 200) {
+                if (isDelete) {
+                    toast.success(`Deleted successfully!`)
+                }
+
+                setIsSaved(true)
+            }
+        }
+        catch (err) {
+            console.log(err)
+            toast.error(`${err.message}`)
         }
     }
 
@@ -357,6 +373,7 @@ function DragZone({ items, style4 }) {
             id="container"
             className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
+            <span className="fixed bottom-0 left-6 animate-pulse">{!isSaved ? "Saving..." : ""}</span>
             <span
                 style={overlayStyle}
                 className={`${dragOverlay !== null ? "fixed" : "hidden"} overflow-visible lines-width mx-auto`}

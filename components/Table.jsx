@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useRouter } from 'next/router'
+import Link from 'next/link';
 import TableContext from './context/TableContext.js.jsx';
 import Skeleton from './Skeleton.jsx';
 import DragTest from './dndUI/DragZone.jsx';
@@ -11,7 +12,6 @@ import axios from 'axios'
 import addingDays from './functions/addingDays.js';
 import addingSavedDays from './functions/addingSavedDays.js';
 import { toast } from 'react-toastify'
-import { gsap } from "gsap";
 import Fade from 'react-reveal/Fade';
 
 
@@ -61,53 +61,9 @@ function Table() {
         })()
     }, [])
 
-    // useEffect(() => {
-    //     console.log("rendering");
-    //     (async () => {
-    //         try {
-    //             const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/17")
-    //             const res = await test.json()
-    //             console.log(res)
-    //             setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
-    //             setItemPure(res.table_content)
-    //             if (res.hasOwnProperty("days") && Object.keys(res.days).length > 0) {
-    //                 setItems(addingSavedDays(res.table_content, res.days))
-    //             }
-    //             else {
-    //                 setItems(addingDays(res.table_content))
-    //             }
-    //         }
-    //         catch (err) {
-    //             console.log(err)
-    //             toast.error(`${err.message}`)
-    //         }
-    //     })()
-    //     // setItems(addingDays(DATA.table_content))
-    //     // setItemPure(DATA.table_content)
-    // }, [])
-    // gsap lol 
-    // start gsap animation 
-    // useLayoutEffect(() => {
-    //     // let theTargetAnimation = gsap.utils.toArray("#container  div.gsapTargetLol")
-    //     // function getFirstTenItems(arr) {
-    //     //     console.log(arr)
-    //     //     return arr.slice(0, 10);
-    //     // }
-    //     let ctx = gsap.context(() => {
-    //         let tl = gsap.timeline()
-    //         // getFirstTenItems(theTargetAnimation),
-    //         tl.from(
-    //             { x: 300, duration: 0.9, stagger: 0.4 })
-    //             .set(getFirstTenItems(theTargetAnimation), { x: 0, stagger: 0.4 })
-    //     }, containerForGsap);
-    //     return () => ctx.revert();
-    // }, [])
-    // end gsap animation 
-
 
     const onOptionChangeHandler1 = (event) => {
         setSortPrimery(event.target.value)
-        console.log("User Sel- ", sortPrimery)
     }
 
     const onOptionChangeHandler2 = (event) => {
@@ -115,7 +71,6 @@ function Table() {
     }
 
     const onChangeColor = (clr, day) => {
-        console.log(clr, day)
         setStyle4(prevState => ({
             ...prevState,
             [day]: { backgroundColor: clr, color: "#000000" }
@@ -127,26 +82,15 @@ function Table() {
 
     const router = useRouter()
 
-    // const containerForGsap = useRef(null);
-    // useEffect(() => {
-    //     let ctx = gsap.context(() => {
-    //         gsap.from(".shit", {
-    //             opacity: 0,
-    //             // y: 10, 
-    //             duration: .5,
-    //             stagger: 0.15
-    //         });
-
-    //     }, containerForGsap);
-    //     return () => ctx.revert();
-    // },[itemPure])
-
 
     return (
         <div>
             <Fade top>
-                {tableInfo.hasOwnProperty("id") ? (<h1 className={`text-3xl font-bold mx-auto w-fit mt-6 mb-10 shit`}>{tableInfo.name} Strip Board</h1>) : (<h2 className='text-5xl my-6 invisible'>shit</h2>)}
-                <div className={`noprintdplay w-60 h-auto mx-auto p-2 flex justify-center shit`}>
+                {tableInfo.hasOwnProperty("id") ? (<h1 className={`text-3xl font-bold mx-auto w-fit mt-6 mb-10 `}>{tableInfo.name} Strip Board</h1>) : (<h2 className='text-5xl my-6 invisible'>test</h2>)}
+                <div className={`noprintdplay w-96 h-auto mx-auto p-2 flex justify-center `}>
+                    <Link href='./print' className='btn btn-sm'>
+                        Preview &amp; Download
+                    </Link>
                     {/* DESGIN BUTTON */}
                     <label htmlFor="design-modal" className="btn btn-sm btn-ghost w-32 flex flex-initial justify-evenly">
                         Design <BiBrush className='h-4 w-4' />
@@ -154,7 +98,7 @@ function Table() {
                 </div>
 
                 {/* ============= SORT SELECT =============== */}
-                <div className={`w-fit m-auto shit`}>
+                <div className={`w-fit m-auto `}>
                     <div className="navbar bg-base-300 rounded-box my-4">
                         <div className="flex justify-end flex-1 px-2">
                             <div className="flex  items-center  ">
@@ -171,7 +115,7 @@ function Table() {
 
                                     <span className='mx-2'> 	&amp; </span>
 
-                                    <select value={sortSecond} onChange={onOptionChangeHandler2} className="select select-xs my-1  select-primary w-auto max-w-xs border-none">
+                                    <select value={sortSecond} onChange={onOptionChangeHandler2} className="select select-xs my-1 select-primary w-auto max-w-xs border-none">
                                         <option disabled  >Secondery</option>
                                         <option value={'id'} >Default </option>
                                         <option value={'camera'} >Camera </option>
@@ -196,7 +140,7 @@ function Table() {
             </Fade>
 
             {/* =============== TABLE =============== */}
-            <main className={`my-container shit`} >
+            <main className={`my-container `} >
                 <div draggable className='table-grid lines-width'>
                     {/* This is the main row  */}
                     <div id="tableTitle" className="row-grid">
