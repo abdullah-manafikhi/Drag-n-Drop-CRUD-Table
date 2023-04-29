@@ -80,7 +80,7 @@ function DragZone({ items, style4 }) {
 
     const onDragStart = (e, index) => {
         e.currentTarget.classList.add("hello")
-        e.dataTransfer.setDragImage(e.target, window.outerWidth, window.outerHeight)
+        // e.dataTransfer.setDragImage(e.target, window.outerWidth, window.outerHeight)
         setDragOverlay(items[index])
         setOverlayStyle(prev => ({ top: e.clientY, transition: "100ms" }))
         // dragOverlay.current = (items[index])
