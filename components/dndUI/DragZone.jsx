@@ -374,7 +374,7 @@ function DragZone({ items, style4 }) {
             className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             <span className="fixed bottom-0 left-6 animate-pulse">{!isSaved ? "Saving..." : ""}</span>
-            <span
+            {/* <span
                 style={overlayStyle}
                 className={`${dragOverlay !== null ? "fixed" : "hidden"} overflow-visible lines-width mx-auto`}
                 ref={fuckshit}
@@ -388,14 +388,14 @@ function DragZone({ items, style4 }) {
                         value={`Item ${dragOverlay.id}`}
                     />
                 ) : ""}
-            </span>
+            </span> */}
 
             {data.map((line, index) => (
                 <div
                     draggable
                     key={index}
                     id={line.id}
-                    className={`w-full gsapTargetLol cursor-move draggable transition-transform draggable-line`}
+                    className={`w-full cursor-move draggable transition-transform draggable-line`}
                     onDragStart={(e) => onDragStart(e, index)}
                     onDragEnter={(e) => onDragEnter(e, index)}
                     onDragLeave={(e) => onDragLeave(e, index)}

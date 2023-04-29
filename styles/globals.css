@@ -265,7 +265,7 @@ body {
 
 /* DND STYLING */
 .dragging {
-  opacity: 0.3;
+  opacity: 0;
   transition: 200ms;
   -webkit-transition: 200ms;
   -moz-transition: 200ms;
