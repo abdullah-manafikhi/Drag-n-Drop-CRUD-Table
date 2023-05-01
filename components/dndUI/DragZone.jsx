@@ -23,7 +23,7 @@ function DragZone({ items, style4 }) {
     // ========= USERREFs =========
     const dragItem = useRef(null);
     // the line that the pointer is over it after dragging a line
-    const dragOverItem = useRef(null);
+    const dragOverItem = useRef({data: {id: "0"}});
 
     useEffect(() => {
         if (addLine.type) {
@@ -75,20 +75,19 @@ function DragZone({ items, style4 }) {
     }, [])
 
     const [dragOverlay, setDragOverlay] = useState(null)
-    // const dragOverlay = useRef(null)
-    const fuckshit = useRef()
+
+    const animatedLine = useRef(null)
 
     const onDragStart = (e, index) => {
-        e.currentTarget.classList.add("hello")
-        // e.dataTransfer.setDragImage(e.target, window.outerWidth, window.outerHeight)
-        setDragOverlay(items[index])
-        setOverlayStyle(prev => ({ top: e.clientY, transition: "100ms" }))
-        // dragOverlay.current = (items[index])
-        // check the clearTimout in the dragEnd event 
+        // e.currentTarget.classList.add("hello")
+        const trgt = e.currentTarget
+        animatedLine.current = e.currentTarget.id
         x = setTimeout(() => {
+            trgt.classList.add("hello")
             dragFlag = true
-            e.target.classList.add("dragging")
-            dragItem.current = { data: data[index], index: index };
+            // e.target.classList.add("dragging")
+            dragItem.current = { data: data[index], index: index }
+            dragOverItem.current = { data: data[index], index: index };
             // getting all the lines
             globalThis.lines = [...document.querySelectorAll(".draggable-line")];
             // creating array of objects that cotains the folowing info
@@ -97,7 +96,7 @@ function DragZone({ items, style4 }) {
                 return { id: line.id, index: index, Y: rec.height + rec.top };
             });
         }, 300)
-    };
+    };  
 
     const [overlayStyle, setOverlayStyle] = useState({})
 
@@ -105,24 +104,32 @@ function DragZone({ items, style4 }) {
         e.preventDefault()
     }
 
-    const onDragEnter = (e, index) => {
+    const onDragEnter = (e) => {
         // this condition is for preventing the overlay element from blocking the drag scroll
         if (e.clientY < window.innerHeight * 0.9 && e.clientY > window.innerHeight * 0.1) {
             setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
         }
-        dragOverItem.current = { data: data[index], index: index };
         if (dragFlag) {
             e.preventDefault();
+            if ((animatedLine.current) !== e.currentTarget.id) {
+                const oldOverItem = document.getElementById(animatedLine.current)
+                oldOverItem.classList.remove("dragging")
+                animatedLine.current = e.currentTarget.id
+                e.currentTarget.classList.add("dragging")
+                
+                const index = data.findIndex(item => {
+                   return item.id === Number(e.currentTarget.id)})
+                dragOverItem.current = { data: data[index], index: index };
+            }
             // after dragging a line when entering new line add "dragging class"
-            e.currentTarget.classList.add("dragging");
         }
     };
 
     const onDragLeave = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         if (dragFlag) {
             // after dragging a line when leaving an entered line remove "dragging class"
-            e.currentTarget.classList.remove("dragging");
+            
         }
     };
 
@@ -148,15 +155,13 @@ function DragZone({ items, style4 }) {
             onSave(newData)
             setRefresh((prev) => !prev);
         }
-        else {
-            setDragOverlay(null)
-            clearTimeout(x)
-            dragItem.current = null
-        }
+        clearTimeout(x)
+        dragItem.current = null
         const draggings = [...document.querySelectorAll(".dragging")]
         draggings.forEach(dragging => {
             dragging.classList.remove("dragging")
         })
+        dragFlag = false
         clearTimeout(x)
     };
 
@@ -275,7 +280,7 @@ function DragZone({ items, style4 }) {
             const params = { days: JSON.stringify(days) }
             putApiCall(params)
         }
-        else if ((dragItem.current.data).hasOwnProperty("scene"))  {
+        else if ((dragItem.current.data).hasOwnProperty("scene")) {
             let itemsNoDays = []
             let originalIndex
             let newIndex
@@ -377,7 +382,6 @@ function DragZone({ items, style4 }) {
             {/* <span
                 style={overlayStyle}
                 className={`${dragOverlay !== null ? "fixed" : "hidden"} overflow-visible lines-width mx-auto`}
-                ref={fuckshit}
             >
                 {dragOverlay !== null ? (
                     <PrintSortableItem
@@ -395,7 +399,7 @@ function DragZone({ items, style4 }) {
                     draggable
                     key={index}
                     id={line.id}
-                    className={`w-full cursor-move draggable transition-transform draggable-line`}
+                    className={`w-full cursor-move transition-transform draggable-line`}
                     onDragStart={(e) => onDragStart(e, index)}
                     onDragEnter={(e) => onDragEnter(e, index)}
                     onDragLeave={(e) => onDragLeave(e, index)}

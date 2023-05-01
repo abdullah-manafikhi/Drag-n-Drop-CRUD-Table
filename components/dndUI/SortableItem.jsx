@@ -140,7 +140,7 @@ function SortableItem(props) {
             {  // ========== DAYS LINES ===========
                 (props.line.day) ? (
                     <>
-                        <div title="Hold to Drag!" id={`d_${props.id}`} style={style4.DAYS} className={`l_${props.id} row-grid-day touch-manipulation z-1 `}>
+                        <div title="Hold to Drag!" id={props.id} style={style4.DAYS} className={`l_${props.id} row-grid-day touch-manipulation z-1 `}>
                             <span className=' w-auto noprintdplay m-auto flex justify-evenly'>
                                 {inputDisabled ?
                                     <>
@@ -190,7 +190,7 @@ function SortableItem(props) {
                     // ========== NOTES LINES ===========
                     : (props.line.note) ? (
                         <>
-                            <div title="Hold to Drag!" id={`n_${props.id}`} className={`l_${props.id} row-grid-note touch-manipulation z-1`}>
+                            <div title="Hold to Drag!" id={props.id} className={`l_${props.id} row-grid-note touch-manipulation z-1`}>
                                 <span className='w-auto noprintdplay m-auto flex justify-evenly'>
                                     {inputDisabled ?
                                         <>
@@ -242,8 +242,8 @@ function SortableItem(props) {
                                 <div
                                     style={formData.camera === "INT." ? style4.INT : style4.EXT}
                                     title="Hold to Drag!"
-                                    className={`l_${props.id} row-grid touch-manipulation duration-1000 -z-10`}
-                                    id={`s_${props.id}`}
+                                    className={`${props.id} row-grid touch-manipulation duration-1000 -z-10`}
+                                    id={props.id}
                                 >
                                     <span className="w-full noprintdplay m-auto flex">
                                         {inputDisabled ? (
