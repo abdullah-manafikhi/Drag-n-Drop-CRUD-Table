@@ -6,13 +6,13 @@ import Skeleton from './Skeleton.jsx';
 import DragTest from './dndUI/DragZone.jsx';
 import sortAccordingFor from "./functions/sort.js";
 import { BiBrush } from 'react-icons/bi'
-import { DATA } from '../assets/data2'
 import { PopOver } from './colorPallete/PopOver'
 import axios from 'axios'
 import addingDays from './functions/addingDays.js';
 import addingSavedDays from './functions/addingSavedDays.js';
 import { toast } from 'react-toastify'
-import Fade from 'react-reveal/Fade';
+// import Fade from 'react-reveal/Fade';
+import Fade from './animation/Fade.jsx'
 import res from '../public/data.json'
 
 
@@ -44,7 +44,7 @@ function Table() {
     useMemo(() => {
         (async () => {
             try {
-                
+               
                 setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
                 setItemPure(res.table_content)
                 if (res.hasOwnProperty("days") && Object.keys(res.days).length > 0) {
@@ -145,28 +145,28 @@ function Table() {
                     {/* This is the main row  */}
                     <div id="tableTitle" className="row-grid">
                         <span className='text-white noprintdplay text-sm sm:text-lg font-bold mx-8'></span>
-                        <Fade left >
-                            <span onClick={() => theadSortbyHundler('id')} className='text-white flex h-full items-center text-sm sm:text-lg font-bold m-auto'>
+                        <Fade >
+                            <span onClick={() => theadSortbyHundler('id')} className='text-white flex justify-center h-full items-center text-sm sm:text-lg font-bold m-auto'>
                                 Scene No.
                             </span>
                         </Fade>
-                        <Fade left delay={200}>
-                            <span onClick={() => theadSortbyHundler('camera')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
+                        <Fade delay={0.2}>
+                            <span onClick={() => theadSortbyHundler('camera')} className='text-white h-full flex justify-center items-center text-sm sm:text-lg font-bold m-auto'>
                                 Camera
                             </span>
                         </Fade>
-                        <Fade left delay={400}>
-                            <span onClick={() => theadSortbyHundler('summary')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
+                        <Fade delay={0.4}>
+                            <span onClick={() => theadSortbyHundler('summary')} className='text-white h-full flex justify-center items-center text-sm sm:text-lg font-bold m-auto'>
                                 Summary
                             </span>
                         </Fade>
-                        <Fade left delay={600}>
-                            <span onClick={() => theadSortbyHundler('location')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold m-auto'>
+                        <Fade delay={0.6}>
+                            <span onClick={() => theadSortbyHundler('location')} className='text-white h-full flex justify-center items-center text-sm sm:text-lg font-bold m-auto'>
                                 Location
                             </span>
                         </Fade>
-                        <Fade left delay={800}      >
-                            <span onClick={() => theadSortbyHundler('page_length')} className='text-white h-full flex items-center text-sm sm:text-lg font-bold mx-8'>
+                        <Fade delay={0.8}      >
+                            <span onClick={() => theadSortbyHundler('page_length')} className='text-white h-full flex justify-center items-center text-sm sm:text-lg font-bold mx-8'>
                                 Page length
                             </span>
                         </Fade>

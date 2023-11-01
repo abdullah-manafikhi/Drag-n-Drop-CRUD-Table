@@ -4,7 +4,8 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { MdDone } from "react-icons/md"
 import TableContext from '../context/TableContext.js.jsx';
 import AddLine from '../AddLine.jsx';
-import Fade from 'react-reveal/Fade';
+// import Fade from 'react-reveal/Fade';
+import Fade from '../animation/Fade.jsx'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 
@@ -176,7 +177,7 @@ function SortableItem(props) {
                             </span>
                             <div className={`flex w-full justify-center`}>
                                 {adding.isAdding ? (
-                                    <Fade duration={300} right>
+                                    <Fade duration={0.3}>
                                         <button className='btn btn-xs btn-ghost text-blue-500 text-xl my-auto '>
                                             <AiOutlinePlus aria-label="add line" onClick={() => setAdding({ isAdding: true, id: formData.id })} />
                                         </button>
@@ -224,7 +225,7 @@ function SortableItem(props) {
                                 <span className=" w-full flex justify-end">
                                     {
                                         adding.isAdding ? (
-                                            <Fade duration={300} right>
+                                            <Fade duration={0.3}>
                                                 <button aria-label="add line" className='btn btn-xs btn-ghost text-blue-500 text-xl my-auto'>
                                                     <AiOutlinePlus onClick={() => setAdding({ isAdding: true, id: formData.id })} />
                                                 </button>
@@ -358,7 +359,7 @@ function SortableItem(props) {
                                             </>
                                         )}
                                         {adding.isAdding ? (
-                                            <Fade duration={300} right>
+                                            <Fade duration={0.3} width="fit-content">
                                                 <button aria-label="add line" className="btn btn-xs btn-ghost text-blue-500 text-xl my-auto">
                                                     <AiOutlinePlus onClick={() => setAdding({ isAdding: true, id: formData.id })} />
                                                 </button>
