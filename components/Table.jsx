@@ -13,6 +13,7 @@ import addingDays from './functions/addingDays.js';
 import addingSavedDays from './functions/addingSavedDays.js';
 import { toast } from 'react-toastify'
 import Fade from 'react-reveal/Fade';
+import res from '../public/data.json'
 
 
 function Table() {
@@ -24,7 +25,7 @@ function Table() {
     const { adding, setAdding, items, setItems, style4, setStyle4, tableInfo, setTableInfo, setIsSaved, isSaved } = useContext(TableContext)
 
     useEffect(() => {
-        if (itemPure.length > 0) {
+        if (itemPure.length > 0 && tableInfo.days !== undefined) {
             const arrayAfterSort = sortAccordingFor(itemPure, sortPrimery, 1, sortSecond, 1)
             // WHEN SELECTING DEFAULT PRIMARY SORT ADD DAY LINES AS IT WAS SAVED
             if (Object.keys(tableInfo.days).length > 0) {
@@ -43,8 +44,7 @@ function Table() {
     useMemo(() => {
         (async () => {
             try {
-                const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/17")
-                const res = await test.json()
+                
                 setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
                 setItemPure(res.table_content)
                 if (res.hasOwnProperty("days") && Object.keys(res.days).length > 0) {
