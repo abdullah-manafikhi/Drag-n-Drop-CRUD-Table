@@ -44,7 +44,7 @@ function Table() {
     useMemo(() => {
         (async () => {
             try {
-               
+                
                 setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
                 setItemPure(res.table_content)
                 if (res.hasOwnProperty("days") && Object.keys(res.days).length > 0) {

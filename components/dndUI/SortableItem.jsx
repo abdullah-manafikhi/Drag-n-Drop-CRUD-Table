@@ -119,19 +119,19 @@ function SortableItem(props) {
 
         }
 
-        try {
-            setIsSaved(false)
-            const response = await axios.put(
-                `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`, params)
-            if (response.status === 200) {
-                toast.success("Saved successfully")
-                setIsSaved(true)
-            }
-        }
-        catch (err) {
-            console.log(err)
-            toast.error(`${err.message}`)
-        }
+        // try {
+        //     setIsSaved(false)
+        //     const response = await axios.put(
+        //         `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`, params)
+        //     if (response.status === 200) {
+        //         toast.success("Saved successfully")
+        //         setIsSaved(true)
+        //     }
+        // }
+        // catch (err) {
+        //     console.log(err)
+        //     toast.error(`${err.message}`)
+        // }
 
     }
 
