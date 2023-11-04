@@ -13,7 +13,6 @@ import addingSavedDays from './functions/addingSavedDays.js';
 import { toast } from 'react-toastify'
 // import Fade from 'react-reveal/Fade';
 import Fade from './animation/Fade.jsx'
-import res from '../public/data.json'
 
 
 function Table() {
@@ -44,8 +43,8 @@ function Table() {
     useMemo(() => {
         (async () => {
             try {
-                // const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/17")
-                // const res = await test.json()
+                const test = await fetch("http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/17")
+                const res = await test.json()
                 setTableInfo({ id: res.id, userId: res.user_id, project: res.project_id, name: res.name, days: res.days })
                 setItemPure(res.table_content)
                 if (res.hasOwnProperty("days") && Object.keys(res.days).length > 0) {

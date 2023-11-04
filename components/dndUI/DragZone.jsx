@@ -105,7 +105,6 @@ function DragZone({ items, style4 }) {
     }
 
     const onDragEnter = (e) => {
-        console.log("its enterring: ", e.currentTarget.id)
         // this condition is for preventing the overlay element from blocking the drag scroll
         if (e.clientY < window.innerHeight * 0.9 && e.clientY > window.innerHeight * 0.1) {
             setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
@@ -143,7 +142,6 @@ function DragZone({ items, style4 }) {
             newData.splice(dragItem.current.index, 1);
             // Adding item to the array
             const over = dragOverItem.current.index
-            console.log("over: ", dragOverItem.current.data.id, over,"data length: ",  data.length , "dragged: ", dragItem.current.data.id)
             newData.splice(over === 0 ? over : over-1, 0, dragItem.current.data);
             dragItem.current = {
                 ...dragItem.current,
@@ -358,21 +356,20 @@ function DragZone({ items, style4 }) {
 
     const putApiCall = async (params, isDelete) => {
         setIsSaved(false)
-        // try {
-        //     const response = await axios.put(
-        //         `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`, params)
-        //     if (response.status === 200) {
-        //         if (isDelete) {
-        //             toast.success(`Deleted successfully!`)
-        //         }
+        try {
+            const response = await axios.put(
+                `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`, params)
+            if (response.status === 200) {
+                if (isDelete) {
+                    toast.success(`Deleted successfully!`)
+                }
 
-        //         setIsSaved(true)
-        //     }
-        // }
-        // catch (err) {
-        //     console.log(err)
-        //     toast.error(`${err.message}`)
-        // }
+                setIsSaved(true)
+            }
+        }
+        catch (err) {
+            toast.error(`${err.message}`)
+        }
     }
 
     return (
