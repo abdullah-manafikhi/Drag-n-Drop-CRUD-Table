@@ -342,7 +342,7 @@ function SortableItem(props) {
                                             />
                                         </>
                                     )}
-                                    <span className={`my-auto w-full ${adding.isAdding ? "flex justify-end" : "flex justify-center"}`}>
+                                    <span className={`my-auto w-full items-center ${adding.isAdding ? "flex justify-end" : "flex justify-center"}`}>
                                         {inputDisabled ? (<><span className="text-sm ">{formData.page_length}</span></>) : (
                                             <>
                                                 <textarea
