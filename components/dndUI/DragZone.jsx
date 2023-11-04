@@ -150,7 +150,7 @@ function DragZone({ items, style4 }) {
                 newData.splice(over === 0 ? over : over-1, 0, dragItem.current.data);
             }
             else{
-                newData.splice(over === 0 ? over : over, 0, dragItem.current.data);
+                newData.splice(over, 0, dragItem.current.data);
             }
             console.log("over: ", over,"data length: ",  data.length , "dragged: ", dragItem.current.data.id)
             dragItem.current = {
