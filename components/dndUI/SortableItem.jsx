@@ -274,7 +274,8 @@ function SortableItem(props) {
                                     </span>
                                     {inputDisabled ? (
                                         <>
-                                            <span className="text-sm ">{formData.scene}</span>
+                                            {/* <span className="text-sm ">{formData.scen}</span> */}
+                                            <span className="text-sm ">{props.id}</span>
                                         </>) : (
                                         <>
                                             <textarea

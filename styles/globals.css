@@ -277,6 +277,11 @@ body {
   padding-top: 3rem ;
 }
 
+.dragging-bottom {
+  opacity: 1;
+  padding-bottom: 3rem ;
+}
+
 .hello {
   opacity: 0;
   width: 1px;

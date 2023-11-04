@@ -105,6 +105,7 @@ function DragZone({ items, style4 }) {
     }
 
     const onDragEnter = (e) => {
+        console.log("its enterring: ", e.currentTarget.id)
         // this condition is for preventing the overlay element from blocking the drag scroll
         if (e.clientY < window.innerHeight * 0.9 && e.clientY > window.innerHeight * 0.1) {
             setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
@@ -116,7 +117,6 @@ function DragZone({ items, style4 }) {
                 oldOverItem.classList.remove("dragging")
                 animatedLine.current = e.currentTarget.id
                 e.currentTarget.classList.add("dragging")
-                
                 const index = data.findIndex(item => {
                    return item.id === Number(e.currentTarget.id)})
                 dragOverItem.current = { data: data[index], index: index };
@@ -142,7 +142,9 @@ function DragZone({ items, style4 }) {
             const newData = [...data];
             newData.splice(dragItem.current.index, 1);
             // Adding item to the array
-            newData.splice(dragOverItem.current.index, 0, dragItem.current.data);
+            const over = dragOverItem.current.index
+            console.log("over: ", dragOverItem.current.data.id, over,"data length: ",  data.length , "dragged: ", dragItem.current.data.id)
+            newData.splice(over === 0 ? over : over-1, 0, dragItem.current.data);
             dragItem.current = {
                 ...dragItem.current,
                 index: dragOverItem.current.index,
@@ -376,7 +378,7 @@ function DragZone({ items, style4 }) {
     return (
         <div
             id="container"
-            className={`relative w-full gap-y-0.5 grid grid-cols-1 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
+            className={`relative w-full gap-y-0.5 grid grid-cols-1 pb-12 ${touch ? " touch-none" : "touch-manipulation "} text-black `}
         >
             <span className="fixed bottom-0 left-6 animate-pulse">{!isSaved ? "Saving..." : ""}</span>
             {/* <span

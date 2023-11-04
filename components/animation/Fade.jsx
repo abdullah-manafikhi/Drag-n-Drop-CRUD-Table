@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 import { PropTypes } from 'prop-types'
 
-function Fade({ children, delay, duration, width }) {
+function Fade({ children, delay, duration, width, margin }) {
 
     const variants = {
         offscreen: {
@@ -11,7 +11,9 @@ function Fade({ children, delay, duration, width }) {
             width: width,
             opacity: 1,
             marginTop: "auto",
-            marginBottom: "auto"
+            marginBottom: "auto",
+            marginRight: margin,
+            marginLeft: margin 
         }
     }
 
@@ -32,13 +34,15 @@ function Fade({ children, delay, duration, width }) {
 Fade.defaultProps = {
     delay: 0,
     duration: 1,
-    width: "100%"
+    width: "100%",
+    margin: "0px"
   }
   
   Fade.propTypes = {
     delay: PropTypes.number,
     duration: PropTypes.number,
-    width: PropTypes.string
+    width: PropTypes.string,
+    margin: PropTypes.string
   }
   
 
