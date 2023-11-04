@@ -86,7 +86,7 @@ body {
   column-gap: 16px !important ;
   grid-template-columns: auto;
   margin: 0px auto;
-  width: 85%;
+  width: 95%;
 }
 
 .lines-width{
@@ -204,9 +204,11 @@ body {
     margin: 0;
     grid-template-columns: 1fr repeat(3, 2fr) 1fr ;
     align-items: center;
+    width: 100%;
   }
   .printpage .row-grid-day {
     grid-template-columns: 1fr;
+    width: 100%;
   }
 }
 
