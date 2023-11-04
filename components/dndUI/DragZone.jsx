@@ -142,8 +142,12 @@ function DragZone({ items, style4 }) {
             newData.splice(dragItem.current.index, 1);
             // Adding item to the array
             const over = dragOverItem.current.index
-            newData.splice(over === 0 ? over : over-1, 0, dragItem.current.data);
-            dragItem.current = {
+            if(dragItem.current.index < over){
+                newData.splice(over === 0 ? over : over-1, 0, dragItem.current.data);
+            }
+            else{
+                newData.splice(over, 0, dragItem.current.data);
+            }            dragItem.current = {
                 ...dragItem.current,
                 index: dragOverItem.current.index,
             };
@@ -272,11 +276,11 @@ function DragZone({ items, style4 }) {
     const onSave = async (newData) => {
         let days = {}
         newData.forEach((item, index) => {
-            if (!item.hasOwnProperty("scene")) {
+            if (item.hasOwnProperty("day")) {
                 days = { ...days, [index]: item }
             }
         })
-        if (!(dragItem.current.data).hasOwnProperty("scene")) {
+        if ((dragItem.current.data).hasOwnProperty("day")) {
             const params = { days: JSON.stringify(days) }
             putApiCall(params)
         }
