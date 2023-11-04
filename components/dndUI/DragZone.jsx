@@ -105,21 +105,24 @@ function DragZone({ items, style4 }) {
     }
 
     const onDragEnter = (e) => {
-        console.log("its enterring: ", e.currentTarget.id)
+        console.log("its enterring: ", e.currentTarget.getAttribute("data-index"))
         // this condition is for preventing the overlay element from blocking the drag scroll
-        if (e.clientY < window.innerHeight * 0.9 && e.clientY > window.innerHeight * 0.1) {
-            setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
-        }
+        // if (e.clientY < window.innerHeight * 0.9 && e.clientY > window.innerHeight * 0.1) {
+        //     setOverlayStyle(prev => ({ top: e.clientY - 30, transition: "300ms" }))
+        // }
         if (dragFlag) {
             e.preventDefault();
             if ((animatedLine.current) !== e.currentTarget.id) {
+                const index = e.currentTarget.getAttribute("data-index")
+                // const index = data.findIndex(item => {
+                //    return item.id === Number(e.currentTarget.id)})
+                dragOverItem.current = { data: data[index], index: index };
+                console.log("its enterring: ", e.currentTarget.id, index)
                 const oldOverItem = document.getElementById(animatedLine.current)
                 oldOverItem.classList.remove("dragging")
                 animatedLine.current = e.currentTarget.id
                 e.currentTarget.classList.add("dragging")
-                const index = data.findIndex(item => {
-                   return item.id === Number(e.currentTarget.id)})
-                dragOverItem.current = { data: data[index], index: index };
+
             }
             // after dragging a line when entering new line add "dragging class"
         }
@@ -143,8 +146,13 @@ function DragZone({ items, style4 }) {
             newData.splice(dragItem.current.index, 1);
             // Adding item to the array
             const over = dragOverItem.current.index
-            console.log("over: ", dragOverItem.current.data.id, over,"data length: ",  data.length , "dragged: ", dragItem.current.data.id)
-            newData.splice(over === 0 ? over : over-1, 0, dragItem.current.data);
+            if(dragItem.current.index < over){
+                newData.splice(over === 0 ? over : over-1, 0, dragItem.current.data);
+            }
+            else{
+                newData.splice(over === 0 ? over : over, 0, dragItem.current.data);
+            }
+            console.log("over: ", over,"data length: ",  data.length , "dragged: ", dragItem.current.data.id)
             dragItem.current = {
                 ...dragItem.current,
                 index: dragOverItem.current.index,
@@ -399,6 +407,7 @@ function DragZone({ items, style4 }) {
             {data.map((line, index) => (
                 <div
                     draggable
+                    data-index={index}
                     key={index}
                     id={line.id}
                     className={`w-full cursor-move transition-transform draggable-line`}
