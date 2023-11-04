@@ -282,11 +282,11 @@ function DragZone({ items, style4 }) {
     const onSave = async (newData) => {
         let days = {}
         newData.forEach((item, index) => {
-            if (!item.hasOwnProperty("scene")) {
+            if (item.hasOwnProperty("day")) {
                 days = { ...days, [index]: item }
             }
         })
-        if (!(dragItem.current.data).hasOwnProperty("scene")) {
+        if ((dragItem.current.data).hasOwnProperty("day")) {
             const params = { days: JSON.stringify(days) }
             putApiCall(params)
         }
@@ -366,21 +366,21 @@ function DragZone({ items, style4 }) {
 
     const putApiCall = async (params, isDelete) => {
         setIsSaved(false)
-        // try {
-        //     const response = await axios.put(
-        //         `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`, params)
-        //     if (response.status === 200) {
-        //         if (isDelete) {
-        //             toast.success(`Deleted successfully!`)
-        //         }
+        try {
+            const response = await axios.put(
+                `http://movieapp-env.eba-xgguxtgd.us-west-1.elasticbeanstalk.com/api/stripboards/${tableInfo.id}`, params)
+            if (response.status === 200) {
+                if (isDelete) {
+                    toast.success(`Deleted successfully!`)
+                }
 
-        //         setIsSaved(true)
-        //     }
-        // }
-        // catch (err) {
-        //     console.log(err)
-        //     toast.error(`${err.message}`)
-        // }
+                setIsSaved(true)
+            }
+        }
+        catch (err) {
+            console.log(err)
+            toast.error(`${err.message}`)
+        }
     }
 
     return (
